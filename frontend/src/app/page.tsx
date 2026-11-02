@@ -1,44 +1,90 @@
 import { Suspense } from "react";
-import { DataModeBadge } from "@/components/ui/DataModeBadge";
-import { EventsTestPanel } from "@/components/test/EventsTestPanel";
+import { Divider } from "@/components/ui/Divider";
+import { Hero } from "@/components/hero/Hero";
+import { SiteNav } from "@/components/layout/SiteNav";
+import { EventsExplorer } from "@/components/workspace/EventsExplorer";
+import { WorkspaceProvider } from "@/components/workspace/WorkspaceProvider";
 
 /**
- * Temporary Phase 1 test page. Verifies the data layer end to end:
- * fixture events, the four region states via ?case=, the Demo badge and the
- * simulated health probe. Replaced by the real nav + hero in Phase 2.
+ * Aegis Matrix landing page (PLAN P2): fixed pill nav, gradient hero with the
+ * exact §7.2 entrance sequence, and the Active Threats board fed by the
+ * dataSource. Later sections (live map, infrastructure, pipeline, impact,
+ * access) are anchor placeholders until their phases land.
  */
+function BoardSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+      <div className="glass relative min-h-[480px] overflow-hidden rounded-3xl md:col-span-8">
+        <div aria-hidden="true" className="flex flex-col gap-4 p-8">
+          <div className="h-4 w-24 animate-pulse rounded bg-white/5" />
+          <div className="h-7 w-2/3 animate-pulse rounded bg-white/5" />
+          <div className="h-4 w-1/2 animate-pulse rounded bg-white/5" />
+        </div>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-white/5 to-transparent"
+        />
+      </div>
+      <div className="flex flex-col gap-6 md:col-span-4">
+        {[0, 1].map((index) => (
+          <div
+            key={index}
+            className="glass relative min-h-[228px] overflow-hidden rounded-3xl"
+          >
+            <div aria-hidden="true" className="flex flex-col gap-4 p-8">
+              <div className="h-4 w-24 animate-pulse rounded bg-white/5" />
+              <div className="h-7 w-2/3 animate-pulse rounded bg-white/5" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-white/5" />
+            </div>
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-white/5 to-transparent"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ThreatBoard() {
+  return (
+    <Suspense fallback={<BoardSkeleton />}>
+      <WorkspaceProvider>
+        <EventsExplorer />
+      </WorkspaceProvider>
+    </Suspense>
+  );
+}
+
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-16 md:px-12">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="max-w-2xl">
-          <p className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-emerald-500">
-            <span aria-hidden="true" className="h-px w-8 bg-emerald-500" />
-            Data layer verification · Phase 1
-          </p>
-          <h1 className="mt-4 text-4xl font-bricolage font-medium tracking-tight text-white md:text-6xl">
-            Aegis <span className="font-light text-white/20">Matrix</span>
-          </h1>
-          <p className="mt-3 text-lg font-light leading-relaxed text-white/60">
-            Events, footprint, infrastructure, forecast and briefing flow
-            through one typed data source. Append{" "}
-            <code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-sm text-white/70">
-              ?case=empty|error|slow|noforecast|llmerror
-            </code>{" "}
-            to inspect the states.
-          </p>
-        </div>
-        <DataModeBadge />
-      </div>
-      <Suspense
-        fallback={
-          <p className="mt-12 font-mono text-xs uppercase tracking-widest text-white/40">
-            Loading test panel...
-          </p>
-        }
-      >
-        <EventsTestPanel />
-      </Suspense>
-    </main>
+    <>
+      <SiteNav />
+      <Hero />
+
+      <main>
+        <Divider />
+
+        {/* Active Threats board — P2 scope */}
+        <section
+          id="threats"
+          className="w-full border-t border-white/5 bg-neutral-950 py-24 scroll-mt-24 md:py-32"
+        >
+          <div className="mx-auto w-full max-w-[90rem] px-6 md:px-12">
+            <ThreatBoard />
+          </div>
+        </section>
+
+        <Divider />
+
+        {/* Anchor placeholders for P3-P5 sections; ids keep the nav honest. */}
+        <div id="live-map" className="h-px scroll-mt-24" />
+        <div id="infrastructure" className="h-px scroll-mt-24" />
+        <div id="pipeline" className="h-px scroll-mt-24" />
+        <div id="impact" className="h-px scroll-mt-24" />
+        <div id="access" className="h-px scroll-mt-24" />
+      </main>
+    </>
   );
 }

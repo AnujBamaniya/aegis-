@@ -62,6 +62,83 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Glass card recipe (P2): every card/panel/pill. Utilities still win over
+   this layer, so variant overrides stay possible. Lite mode drops the blur. */
+@layer components {
+  .glass {
+    @apply border border-white/10 bg-neutral-950/60 backdrop-blur-2xl;
+  }
+  [data-perf="lite"] .glass {
+    @apply bg-neutral-950/90;
+    backdrop-filter: none;
+  }
+}
+
+/* Utility: horizontal scroll strips with no visible scrollbar. */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Featured-card HUD scan lines (P2, featured card only). */
+.hud-scanlines {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.12) 0px,
+    rgba(255, 255, 255, 0.12) 1px,
+    transparent 1px,
+    transparent 14px
+  );
+  animation: hudScan 4s linear infinite;
+}
+@keyframes hudScan {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 28px;
+  }
+}
+[data-perf="lite"] .hud-scanlines {
+  display: none;
+}
+
+/* Filter-swap card entrance (P2): backwards fill so finished cards are
+   back under normal styles and the 300ms leaving transition still works. */
+.card-swap-in {
+  animation: cardSwapIn 0.55s cubic-bezier(0.25, 1, 0.5, 1) backwards;
+}
+@keyframes cardSwapIn {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Lite mode: cinematic entrance without the blur filter (P2 hero). */
+@keyframes cinematicEntranceLite {
+  0% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+[data-perf="lite"] .animate-cinematic {
+  animation-name: cinematicEntranceLite;
+}
+
 body {
   @apply bg-neutral-950 text-neutral-50 w-full overflow-x-hidden relative;
 }
@@ -139,7 +216,12 @@ body {
   .animate-ticker,
   .animate-spin-slow-reverse,
   .bar-anim,
-  .animate-pulse {
+  .animate-pulse,
+  .hud-scanlines {
+    animation: none;
+  }
+  /* Filter-swap entrances appear instantly (no stagger). */
+  .card-swap-in {
     animation: none;
   }
   /* Scroll-reveal content must never be invisible. */

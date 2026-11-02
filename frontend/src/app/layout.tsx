@@ -8,6 +8,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { BlueprintGrid } from "@/components/layout/BlueprintGrid";
 import { PerfInit } from "@/components/perf/PerfInit";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
@@ -50,6 +51,7 @@ export default function RootLayout({
       className={`${inter.variable} ${bricolage.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <BlueprintGrid />
         <PerfInit />
         <QueryProvider>{children}</QueryProvider>
         <ScrollReveal />
