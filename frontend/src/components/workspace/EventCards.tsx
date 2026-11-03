@@ -61,8 +61,9 @@ function Scrim() {
 }
 
 /** Type + GDACS alert chips, top-left. Severity words like CRITICAL or HIGH
-    belong to infrastructure tiers and are never used on events. */
-function TypeChips({ event }: { event: AegisEvent }) {
+    belong to infrastructure tiers and are never used on events. Also reused
+    by the impact workspace summary card. */
+export function TypeChips({ event }: { event: AegisEvent }) {
   const alert = alertPresentation(event.alertLevel);
   return (
     <span className="flex flex-wrap items-center gap-2">
@@ -154,15 +155,15 @@ export function EventCardLarge({
           title, description, meta row and arrow together at the bottom.
           justify-between keeps the chips clear of the label whatever the
           card height. */}
-      <div className="relative z-20 flex h-full flex-1 flex-col justify-between p-8 md:p-12">
-        <div className="flex items-start justify-between gap-4">
+      <div className="relative z-20 flex h-full flex-1 flex-col p-8 md:p-12">
+        <div className="mb-3 flex items-start justify-between gap-4">
           <TypeChips event={event} />
           <span className="hidden shrink-0 font-mono text-[10px] tabular-nums text-white/40 sm:block">
             {formatCoords(event)}
           </span>
         </div>
 
-        <div className="max-w-xl">
+        <div className="mt-auto max-w-xl">
           {event.severityText ? (
             <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
               {event.severityText}
@@ -192,20 +193,15 @@ export function EventCardLarge({
               </div>
             ) : null}
           </dl>
-          {event.detailUrl ? (
+          <div className="mt-8 flex items-center gap-3">
             <a
-              href={event.detailUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              href="#impact"
+              aria-label="View impact"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
             >
-              <span className="sr-only">
-                Open the {EVENT_TYPE_LABEL[event.type].toLowerCase()} source
-                record for {event.name}
-              </span>
               <ArrowRightIcon className="h-5 w-5" />
             </a>
-          ) : null}
+          </div>
         </div>
       </div>
     </article>

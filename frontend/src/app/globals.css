@@ -233,3 +233,66 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Map panel (P3, DESIGN 10): controls restyled to the dark language,
+   no default light MapLibre UI. */
+.maplibregl-ctrl.maplibregl-ctrl-group {
+  background: rgba(23, 23, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+.maplibregl-ctrl-group button {
+  background-color: transparent;
+  width: 32px;
+  height: 32px;
+}
+.maplibregl-ctrl-group button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  background: rgba(23, 23, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  backdrop-filter: blur(8px);
+}
+.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib-button {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Asset tooltip (P3, VELOS hotspot style 8.7): built in MapCanvas with
+   createElement/textContent (no innerHTML) and shown as a MapLibre popup
+   with this custom class: transparent content, no tip arrow. */
+.aegis-tooltip {
+  z-index: 20;
+}
+.aegis-tooltip .maplibregl-popup-content {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: none;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  color: #fff;
+  min-width: 11rem;
+}
+.aegis-tooltip .maplibregl-popup-tip {
+  display: none;
+}
+[data-perf="lite"] .aegis-tooltip .maplibregl-popup-content,
+[data-perf="lite"] .maplibregl-ctrl-group,
+[data-perf="lite"] .maplibregl-ctrl-attrib {
+  backdrop-filter: none;
+}

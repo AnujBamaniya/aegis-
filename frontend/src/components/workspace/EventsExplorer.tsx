@@ -201,8 +201,7 @@ export function EventsExplorer() {
           </h2>
           <p className="mt-4 font-light leading-relaxed text-white/50">
             Live GDACS events streaming through the platform. Select a threat
-            to make it the primary card; its footprint, assets, forecast and
-            briefing follow in later phases.
+            to make it the featured card, then open its impact workspace below.
           </p>
         </div>
         {events.isSuccess ? (
