@@ -44,7 +44,7 @@ function StatusDot({
 
 function SystemHeader({ online }: { online: boolean }) {
   return (
-    <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-white/40">
+    <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-neutral-400">
       <span
         aria-hidden="true"
         className={`h-1 w-1 rounded-full ${
@@ -88,7 +88,7 @@ function StatusCard({
               {online && demo ? " · Demo" : ""}
             </span>
             {/* Small subtitle, not a headline value. */}
-            <span className="block font-mono text-[10px] text-white/30">
+            <span className="block font-mono text-[10px] text-neutral-400">
               {system}
             </span>
           </dd>
@@ -115,14 +115,14 @@ function StatusCard({
           style={{ width: alertFlagged != null ? `${alertFlagged}%` : "0%" }}
         />
       </div>
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-white/30">
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-neutral-400">
         {alertFlagged != null
           ? `${alertFlagged}% GDACS Red/Orange share`
           : "Awaiting feed"}
       </p>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <p>
-          <span className="block font-mono text-[10px] uppercase tracking-wider text-white/40">
+          <span className="block font-mono text-[10px] uppercase tracking-wider text-neutral-400">
             Events
           </span>
           <span className="font-mono text-sm text-white">
@@ -130,7 +130,7 @@ function StatusCard({
           </span>
         </p>
         <p>
-          <span className="block font-mono text-[10px] uppercase tracking-wider text-white/40">
+          <span className="block font-mono text-[10px] uppercase tracking-wider text-neutral-400">
             Poll
           </span>
           <span className="font-mono text-sm text-white">5 min</span>

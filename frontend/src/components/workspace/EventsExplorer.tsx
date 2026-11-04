@@ -43,7 +43,7 @@ function SkeletonCard({ className = "" }: { className?: string }) {
 function EmptyState({ filter }: { filter: ThreatFilter }) {
   return (
     <div className="glass col-span-1 rounded-3xl px-8 py-20 text-center md:col-span-12">
-      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">
         Feed clear
       </p>
       <p className="text-lg font-light text-white/50">
@@ -197,7 +197,7 @@ export function EventsExplorer() {
           </p>
           <h2 className="font-bricolage text-4xl font-medium tracking-tight text-white md:text-5xl">
             Active{" "}
-            <span className="font-light text-white/30">threats</span>
+            <span className="font-light text-neutral-500">threats</span>
           </h2>
           <p className="mt-4 font-light leading-relaxed text-white/50">
             Live GDACS events streaming through the platform. Select a threat
@@ -214,7 +214,7 @@ export function EventsExplorer() {
       <p
         role="status"
         aria-live="polite"
-        className="mb-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40"
+        className="mb-6 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400"
       >
         {events.isPending
           ? "Loading threat feed…"

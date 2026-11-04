@@ -83,7 +83,7 @@ function IngestionEngine({ className }: { className?: string }) {
         <h3 className="text-3xl font-bricolage font-medium text-white tracking-tight group-hover:text-emerald-50 transition-colors">
           GDACS hazard feed
         </h3>
-        <p className="mt-2 text-sm font-light text-white/40 leading-relaxed group-hover:text-white/60 transition-colors">
+        <p className="mt-2 text-sm font-light text-neutral-400 leading-relaxed group-hover:text-white/60 transition-colors">
           Tropical cyclones, floods and wildfires ingested every five minutes.
         </p>
 
@@ -168,7 +168,7 @@ function SpatialEngine({ className }: { className?: string }) {
         <h3 className="text-3xl font-bricolage font-medium text-white tracking-tight group-hover:text-blue-50 transition-colors">
           Metric-projected distances
         </h3>
-        <p className="mt-2 text-sm font-light text-white/40 leading-relaxed group-hover:text-white/60 transition-colors">
+        <p className="mt-2 text-sm font-light text-neutral-400 leading-relaxed group-hover:text-white/60 transition-colors">
           UTM-projected distances from each hazard footprint to nearby critical
           assets, tiered by distance threshold.
         </p>
@@ -256,7 +256,7 @@ function ForecastBriefing({ className }: { className?: string }) {
         <h3 className="text-3xl font-bricolage font-medium text-white tracking-tight group-hover:text-purple-50 transition-colors">
           AI severity & briefing
         </h3>
-        <p className="mt-2 text-sm font-light text-white/40 leading-relaxed group-hover:text-white/60 transition-colors">
+        <p className="mt-2 text-sm font-light text-neutral-400 leading-relaxed group-hover:text-white/60 transition-colors">
           Chronos-Bolt severity forecast and a local LLM executive briefing,
           labelled as AI-generated.
         </p>
@@ -294,7 +294,7 @@ export function CoreSystems() {
           </p>
           <h2 className="font-bricolage text-5xl md:text-7xl font-semibold tracking-tight text-white">
             Core{" "}
-            <span className="font-light text-white/30">systems</span>
+            <span className="font-light text-neutral-500">systems</span>
           </h2>
           <p className="mt-4 font-light leading-relaxed text-white/50">
             Three deterministic engines power the ingest-to-brief pipeline.

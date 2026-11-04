@@ -59,7 +59,7 @@ export function Footer() {
                   <a
                     key={href}
                     href={href}
-                    className="block text-sm font-medium text-white/60 hover:text-white transition-colors"
+                    className="block text-sm font-medium text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
                   >
                     {label}
                   </a>
@@ -70,7 +70,7 @@ export function Footer() {
                   <a
                     key={href}
                     href={href}
-                    className="block text-sm font-medium text-white/60 hover:text-white transition-colors"
+                    className="block text-sm font-medium text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
                   >
                     {label}
                   </a>
@@ -81,7 +81,7 @@ export function Footer() {
 
           {/* Data credits */}
           <div className="md:col-span-3 lg:col-span-3">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mb-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
               Data & tools
             </p>
             <p className="text-sm font-light text-white/50 leading-relaxed">
@@ -96,7 +96,7 @@ export function Footer() {
 
         {/* Top of page link */}
         <div className="mt-12 pt-8 border-t border-white/10 flex items-center justify-between">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-neutral-400">
             Aegis Matrix — GEOINT / DRR
           </p>
           <a

@@ -112,7 +112,7 @@ export function ImpactWorkspace() {
         </p>
         <h2 className="font-bricolage text-4xl font-medium tracking-tight text-white md:text-5xl">
           Impact{" "}
-          <span className="font-light text-white/30">workspace</span>
+          <span className="font-light text-neutral-500">workspace</span>
         </h2>
         <p className="mt-4 font-light leading-relaxed text-white/50">
           The selected threat from the board above, its published footprint and
@@ -178,7 +178,7 @@ export function ImpactWorkspace() {
                 <p className={SECTION_LABEL}>
                   Assets in scan window
                   {infrastructure.isError ? null : (
-                    <span className="ml-2 text-white/40">
+                    <span className="ml-2 text-neutral-400">
                       {infrastructure.data ? `${infrastructure.data.length}` : "—"}
                     </span>
                   )}

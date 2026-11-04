@@ -20,7 +20,7 @@ export type AlertPresentation = {
 const NEUTRAL: AlertPresentation = {
   label: "No alert level",
   dot: "bg-white/30",
-  chip: "border border-white/10 bg-white/5 text-white/40",
+  chip: "border border-white/10 bg-white/5 text-neutral-400",
   backdrop: "from-white/10 to-transparent",
   tint: "rgba(255, 255, 255, 0.6)",
 };

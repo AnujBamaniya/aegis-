@@ -303,7 +303,7 @@ body {
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Asset tooltip (P3, VELOS hotspot style 8.7): built in MapCanvas with
+/* Asset tooltip (P3, hotspot style DESIGN 8.7): built in MapCanvas with
    createElement/textContent (no innerHTML) and shown as a MapLibre popup
    with this custom class: transparent content, no tip arrow. */
 .aegis-tooltip {

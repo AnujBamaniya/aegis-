@@ -65,7 +65,7 @@ export default function Home() {
       <SiteNav />
       <Hero />
 
-      <main id="top">
+      <main id="main">
         <Divider />
 
         <Suspense fallback={<BoardSkeleton />}>

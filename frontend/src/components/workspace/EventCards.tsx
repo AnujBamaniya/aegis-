@@ -158,14 +158,14 @@ export function EventCardLarge({
       <div className="relative z-20 flex h-full flex-1 flex-col p-8 md:p-12">
         <div className="mb-3 flex items-start justify-between gap-4">
           <TypeChips event={event} />
-          <span className="hidden shrink-0 font-mono text-[10px] tabular-nums text-white/40 sm:block">
+          <span className="hidden shrink-0 font-mono text-[10px] tabular-nums text-neutral-400 sm:block">
             {formatCoords(event)}
           </span>
         </div>
 
         <div className="mt-auto max-w-xl">
           {event.severityText ? (
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">
               {event.severityText}
             </p>
           ) : null}
@@ -177,18 +177,18 @@ export function EventCardLarge({
               {event.description}
             </p>
           ) : null}
-          <dl className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-white/10 pt-6 font-mono text-xs uppercase tracking-widest text-white/40">
+          <dl className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-white/10 pt-6 font-mono text-xs uppercase tracking-widest text-neutral-400">
             <div>
-              <dt className="block text-white/30">Coordinates</dt>
+              <dt className="block text-neutral-400">Coordinates</dt>
               <dd className="tabular-nums text-white">{formatCoords(event)}</dd>
             </div>
             <div>
-              <dt className="block text-white/30">Since</dt>
+              <dt className="block text-neutral-400">Since</dt>
               <dd className="text-white">{sinceLabel(event)}</dd>
             </div>
             {countryLabel(event) ? (
               <div>
-                <dt className="block text-white/30">Country</dt>
+                <dt className="block text-neutral-400">Country</dt>
                 <dd className="text-white">{countryLabel(event)}</dd>
               </div>
             ) : null}
@@ -236,7 +236,7 @@ export function EventCardSmall({
       disabled={!onSelect}
       aria-pressed={selected}
       onClick={onSelect ? () => onSelect(event.id) : undefined}
-      className={`glass group relative flex min-h-[228px] w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left shadow-xl transition-all duration-300 ${
+      className={`glass group relative flex min-h-[228px] w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left shadow-xl transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
         onSelect ? "cursor-pointer hover:border-white/20" : "cursor-not-allowed opacity-60"
       } ${
         selected ? "border-white/30 ring-1 ring-white/20" : ""
@@ -264,7 +264,7 @@ export function EventCardSmall({
           <h3 className="font-bricolage text-2xl font-medium tracking-tight text-white">
             {event.name}
           </h3>
-          <p className="mt-2 truncate font-mono text-[10px] uppercase tracking-widest text-white/40">
+          <p className="mt-2 truncate font-mono text-[10px] uppercase tracking-widest text-neutral-400">
             {formatCoords(event)} · Since {sinceLabel(event)}
             {countryLabel(event) ? ` · ${countryLabel(event)}` : ""}
           </p>

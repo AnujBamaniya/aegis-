@@ -55,7 +55,7 @@ function AccessCard({
   return (
     <a
       href={audience.actionHref}
-      className="group relative block p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-white/0 hover:from-white/20 hover:to-white/5 transition-all duration-500 animate-on-scroll"
+      className="group relative block p-[1px] rounded-3xl bg-gradient-to-br from-white/10 to-white/0 hover:from-white/20 hover:to-white/5 transition-all duration-500 animate-on-scroll focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
     >
       <div
         className="relative h-full bg-neutral-900/80 backdrop-blur-xl rounded-[23px] p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center border border-white/5 group-hover:border-transparent transition-colors overflow-hidden"
@@ -111,7 +111,7 @@ function SDGChip({ label, sub }: { label: string; sub: string }) {
         <div className="font-mono text-[10px] uppercase tracking-widest text-white/50">
           {label}
         </div>
-        <div className="font-mono text-[10px] uppercase tracking-widest text-white/40">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-neutral-400">
           {sub}
         </div>
       </div>

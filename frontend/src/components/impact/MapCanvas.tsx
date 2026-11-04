@@ -486,7 +486,7 @@ export default function MapCanvas({
         new AttributionControl({
           compact: true,
           customAttribution:
-            "MapLibre · GDACS · Open-Meteo · Esri · © OpenStreetMap contributors, © CARTO",
+            "© OpenStreetMap contributors, © CARTO · GDACS · Open-Meteo · Esri",
         }),
         "bottom-right",
       );

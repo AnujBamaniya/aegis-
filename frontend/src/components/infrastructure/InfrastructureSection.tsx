@@ -52,7 +52,7 @@ export function InfrastructureSection() {
           </p>
           <h2 className="font-bricolage text-4xl md:text-5xl font-medium tracking-tight text-white">
             Vulnerability{" "}
-            <span className="font-light text-white/30">index</span>
+            <span className="font-light text-neutral-500">index</span>
           </h2>
           <p className="mt-4 font-light leading-relaxed text-white/50">
             Critical infrastructure grouped by asset class, tiered by distance

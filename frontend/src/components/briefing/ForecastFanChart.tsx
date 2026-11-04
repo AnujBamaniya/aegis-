@@ -106,7 +106,7 @@ export function ForecastFanChart({
   ) {
     return (
       <div className="glass flex h-full min-h-[340px] flex-col items-center justify-center rounded-3xl p-8 text-center">
-        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-white/40">
+        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
           Forecast
         </span>
         <h3 className="mb-2 font-bricolage text-lg font-medium text-white">

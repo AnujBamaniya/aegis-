@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aegis Matrix (frontend)
 
-## Getting Started
+Real-time disaster impact prediction and threat mapping (GDACS × critical infrastructure).
+The backend reference lives in `../Backend/app/` and is not needed to run this app.
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Verify with `pnpm exec tsc --noEmit` and `pnpm lint`. Production: `pnpm build && pnpm start`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `NEXT_PUBLIC_DATA_MODE` = `mock` (default) | `live`.
+  - `mock`: synthetic fixtures in `src/mocks/fixtures/` (`?case=` scenarios below).
+  - `live`: all requests go through the proxy `src/app/api/aegis/[...path]/route.ts`.
+- `AEGIS_API_URL`: server-side base URL of the backend (live mode only; not exposed to the browser).
+- `NEXT_PUBLIC_LITE_MODE=1`: force lite mode (also `?lite=1`, low device caps, or `localStorage["aegis:lite"]="1"`).
 
-## Learn More
+## Mock scenarios (`?case=`)
 
-To learn more about Next.js, take a look at the following resources:
+`ok` (default) · `empty` · `error` · `slow` · `noforecast` · `llmerror`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All mock data is synthetic — never real GDACS, OpenStreetMap, Open-Meteo or Esri output.

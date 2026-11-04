@@ -55,8 +55,8 @@ export function Hero() {
       {/* Content grid, ends low on the hero. The status card flows below the
           description card on mobile (2.4s) and is absolutely positioned only
           on lg. */}
-      <div className="relative z-10 mx-auto grid w-full max-w-[90rem] grid-cols-1 items-end gap-6 px-6 md:grid-cols-12 md:px-12 md:pt-36">
-        <div className="min-w-0 md:col-span-7 lg:pb-56">
+      <div className="relative z-10 mx-auto w-full max-w-[90rem] px-6 md:px-12 md:pt-36 lg:grid lg:grid-cols-12 lg:gap-10 lg:items-end">
+        <div className="min-w-0 lg:col-span-7 lg:pb-56">
           {/* Live/Demo pill — mobile variant: in flow above the headline
               (2.5s). The lg variant renders in the right column. */}
           <Suspense fallback={null}>
@@ -73,7 +73,7 @@ export function Hero() {
           {/* One h1: readable full phrase is sr-only; the huge display lines
               are decorative. Line 1 — delay 1.4s, line 2 — delay 1.6s. The "&"
               is a decorative italic glyph carrying no content. */}
-          <h1 className="font-bricolage text-[clamp(3.5rem,9vw,7.25rem)] font-medium leading-[0.95] tracking-tighter text-white">
+          <h1 className="font-bricolage text-[clamp(3.5rem,8.5vw,7rem)] font-medium leading-[0.95] tracking-tighter text-white">
             <span className="sr-only">Predict and protect</span>
             <span aria-hidden="true">
               <span className="block drop-shadow-2xl opacity-0 animate-slide-up [animation-delay:1.4s]">
@@ -94,7 +94,7 @@ export function Hero() {
 
         {/* Right column: live pill in normal flow above the card (lg only),
             then the glass description card — delay 1.8s */}
-        <div className="flex flex-col md:col-span-5 lg:mt-16">
+        <div className="flex flex-col lg:col-span-5 lg:mt-16">
           <Suspense fallback={null}>
             <HeroPill />
           </Suspense>
@@ -117,7 +117,7 @@ export function Hero() {
         </div>
 
         {/* Status card on mobile — flows below the description card, delay 2.4s */}
-        <div className="md:col-span-12">
+        <div className="lg:col-span-12">
           <Suspense fallback={null}>
             <HeroStatusGrid />
           </Suspense>
@@ -126,7 +126,7 @@ export function Hero() {
 
       {/* Scroll cue — bottom center, delay 2.2s */}
       <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 opacity-0 animate-slide-up [animation-delay:2.2s] lg:flex">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-neutral-400">
           Scroll to explore
         </span>
         <span aria-hidden="true" className="h-12 w-[1px] bg-gradient-to-b from-white to-transparent" />

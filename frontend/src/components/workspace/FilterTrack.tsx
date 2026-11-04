@@ -50,7 +50,7 @@ export function FilterTrack({
   counts: { ALL: number; TC: number; FL: number; WF: number } | null;
 }) {
   const buttonClass = (active: boolean) =>
-    `flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-all duration-300 lg:px-4 ${
+    `flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 lg:px-4 ${
       active
         ? "bg-white text-black shadow-lg shadow-white/5 scale-105"
         : "text-white/50 hover:text-white hover:bg-white/5"

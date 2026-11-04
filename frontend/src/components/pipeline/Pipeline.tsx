@@ -148,7 +148,7 @@ function PipelineStage({
 
   return (
     <div
-      className="relative flex flex-col md:flex-row items-center justify-between mb-8 md:mb-20 group animate-on-scroll"
+      className="relative flex flex-col md:flex-row items-center justify-between py-10 md:py-14 group animate-on-scroll"
       data-anim={isRight ? "slide-right" : "slide-left"}
       style={{ animationDelay: `${index * 100}ms` }}
     >
@@ -160,7 +160,7 @@ function PipelineStage({
         <h3 className="text-3xl font-bricolage text-white tracking-tight">
           {stage.title}
         </h3>
-        <p className="mt-2 font-light text-white/40">{stage.description}</p>
+        <p className="mt-2 font-light text-neutral-400">{stage.description}</p>
         <StatusChip variant={status.variant} label={status.label} />
       </div>
 
@@ -188,7 +188,7 @@ function PipelineStage({
         aria-hidden="true"
       >
         <span
-          className="anim-delay-300 animate-on-scroll text-[9rem] leading-none font-bricolage font-bold tracking-tighter text-white/5 select-none pointer-events-none"
+          className="anim-delay-300 animate-on-scroll text-[7rem] leading-none font-bricolage font-bold tracking-tighter text-white/5 select-none pointer-events-none md:text-[10rem]"
           data-anim={isRight ? "slide-left" : "slide-right"}
         >
           {stage.number}
@@ -271,7 +271,7 @@ export function Pipeline() {
           aria-hidden="true"
         />
 
-        <div className="relative flex flex-col items-center">
+        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center">
           {STAGES.map((stage, index) => (
             <PipelineStage
               key={stage.id}
