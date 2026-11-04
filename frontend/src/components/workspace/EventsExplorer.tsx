@@ -96,7 +96,7 @@ function ErrorState({
  */
 export function EventsExplorer() {
   const events = useEventsFeed();
-  const { filter, setFilter, select } = useWorkspace();
+  const { filter, setFilter, select, isBriefingRunning } = useWorkspace();
   const workspaceSelectedId = useWorkspaceSelectedId();
 
   // Filter-swap choreography: the workspace filter flips immediately (so the
@@ -225,6 +225,19 @@ export function EventsExplorer() {
               : ""}
       </p>
 
+      {/* Visible note while briefing is running (P4 rule) */}
+      {isBriefingRunning && (
+        <div
+          role="status"
+          className="mb-6 flex items-center gap-3 rounded-2xl border border-purple-500/30 bg-purple-500/10 px-4 py-3 text-sm text-purple-300"
+        >
+          <span className="h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
+          <span className="font-mono text-xs">
+            Briefing in progress. The backend handles one request at a time.
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
         {events.isPending ? (
           <>
@@ -271,7 +284,7 @@ export function EventsExplorer() {
                     event={event}
                     rank={rankOf(event)}
                     selected={false}
-                    onSelect={select}
+                    onSelect={isBriefingRunning ? undefined : select}
                     leaving={leaving}
                     enterDelay={enterDelayFor(index + 1)}
                   />
@@ -286,7 +299,7 @@ export function EventsExplorer() {
                     event={event}
                     rank={rankOf(event)}
                     selected={false}
-                    onSelect={select}
+                    onSelect={isBriefingRunning ? undefined : select}
                     leaving={leaving}
                     enterDelay={enterDelayFor(index + 3)}
                   />

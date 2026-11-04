@@ -4,12 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import { useMockCase } from "@/hooks/useMockCase";
 import type { EventType } from "@/lib/schema";
+import { getState, subscribe } from "@/lib/briefingModule";
 
 export type ThreatFilter = "ALL" | EventType;
 
@@ -22,30 +24,47 @@ type WorkspaceState = {
   select: (id: string) => void;
   /** Active `?case=` scenario (mock mode). */
   mockCase: string;
+  /** Whether an AI briefing generation is currently in flight. */
+  isBriefingRunning: boolean;
 };
 
 const WorkspaceContext = createContext<WorkspaceState | null>(null);
 
 /**
- * Shared selection/filter state for the Active Threats board (PLAN P2).
+ * Shared selection/filter state for the Active Threats board (PLAN P2-P4).
  * Holds the selected event and the TC/FL/WF filter so map, chart and briefing
- * sections can consume the same workspace later.
+ * sections can consume the same workspace. Disables event switching while
+ * a single-flight briefing is in progress.
  */
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const mockCase = useMockCase();
   const [filter, setFilterState] = useState<ThreatFilter>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isBriefingRunning, setIsBriefingRunning] = useState<boolean>(() => getState().running);
 
-  const setFilter = useCallback((next: ThreatFilter) => {
-    setFilterState(next);
-    setSelectedId(null); // fall back to the first event of the new channel
+  useEffect(() => {
+    const unsub = subscribe(() => {
+      setIsBriefingRunning(getState().running);
+    });
+    return unsub;
   }, []);
 
-  const select = useCallback((id: string) => setSelectedId(id), []);
+  const setFilter = useCallback((next: ThreatFilter) => {
+    // If briefing is in progress, do not switch channel/selection
+    if (getState().running) return;
+    setFilterState(next);
+    setSelectedId(null);
+  }, []);
+
+  const select = useCallback((id: string) => {
+    // If briefing is in progress, selection is locked
+    if (getState().running) return;
+    setSelectedId(id);
+  }, []);
 
   const value = useMemo<WorkspaceState>(
-    () => ({ filter, setFilter, selectedId, select, mockCase }),
-    [filter, setFilter, selectedId, select, mockCase],
+    () => ({ filter, setFilter, selectedId, select, mockCase, isBriefingRunning }),
+    [filter, setFilter, selectedId, select, mockCase, isBriefingRunning],
   );
 
   return (

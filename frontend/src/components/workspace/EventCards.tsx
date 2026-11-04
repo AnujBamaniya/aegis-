@@ -233,9 +233,12 @@ export function EventCardSmall({
   return (
     <button
       type="button"
+      disabled={!onSelect}
       aria-pressed={selected}
       onClick={onSelect ? () => onSelect(event.id) : undefined}
-      className={`glass group relative flex min-h-[228px] w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-3xl text-left shadow-xl hover:border-white/20 ${
+      className={`glass group relative flex min-h-[228px] w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left shadow-xl transition-all duration-300 ${
+        onSelect ? "cursor-pointer hover:border-white/20" : "cursor-not-allowed opacity-60"
+      } ${
         selected ? "border-white/30 ring-1 ring-white/20" : ""
       } ${swapClasses(leaving)}`}
       style={swapStyle(enterDelay)}

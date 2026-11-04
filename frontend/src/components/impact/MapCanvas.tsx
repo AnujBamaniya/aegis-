@@ -6,6 +6,7 @@ import {
   LngLatBounds,
   Map as MapLibreMap,
   Marker,
+  NavigationControl,
   Popup,
   setWorkerUrl,
 } from "maplibre-gl";
@@ -36,15 +37,39 @@ const CARTO_STYLE_URL =
 // same-origin module worker) instead of the default relative-to-bundle URL.
 setWorkerUrl("/maplibre-gl-worker.mjs");
 
-/** Tile-free fallback: footprint + pins still render on a dark background. */
-const FALLBACK_STYLE: StyleSpecification = {
+/**
+ * CARTO Dark Matter raster fallback style (DESIGN §10: "else raster tiles").
+ * If the vector style or WebGL fonts/sprites are blocked or fail, raster tiles
+ * reliably load the dark geographic basemap with zero external asset dependencies.
+ */
+const RASTER_FALLBACK_STYLE: StyleSpecification = {
   version: 8,
-  sources: {},
+  sources: {
+    "carto-dark-raster": {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      attribution:
+        "© OpenStreetMap contributors, © CARTO",
+    },
+  },
   layers: [
     {
       id: "background",
       type: "background",
-      paint: { "background-color": "#0a0a0a" },
+      paint: { "background-color": "#0e0e0e" },
+    },
+    {
+      id: "carto-dark-raster-layer",
+      type: "raster",
+      source: "carto-dark-raster",
+      minzoom: 0,
+      maxzoom: 19,
     },
   ],
 };
@@ -187,14 +212,22 @@ export default function MapCanvas({
 
   // ------------------------------------------------------------------
   // Data application: footprint layers, event centre, asset pins, pings,
-  // fit bounds. Runs on map load and whenever the data changes.
+  // fit bounds. Runs on map load and whenever data or style changes.
   // ------------------------------------------------------------------
   useEffect(() => {
     const map = mapRef.current;
     if (!map || failed) return;
+
     if (!map.isStyleLoaded()) {
-      map.once("idle", () => setReadyKey((key) => key + 1));
-      return;
+      const onReady = () => setReadyKey((key) => key + 1);
+      map.once("load", onReady);
+      map.once("styledata", onReady);
+      map.once("idle", onReady);
+      return () => {
+        map.off("load", onReady);
+        map.off("styledata", onReady);
+        map.off("idle", onReady);
+      };
     }
 
     const latest = latestRef.current;
@@ -207,14 +240,14 @@ export default function MapCanvas({
         type: "fill",
         source: "aegis-footprint",
         filter: ["==", ["geometry-type"], "Polygon"],
-        paint: { "fill-color": "#000", "fill-opacity": 0.15 },
+        paint: { "fill-color": latest.alertHex, "fill-opacity": 0.15 },
       });
       map.addLayer({
         id: "footprint-line",
         type: "line",
         source: "aegis-footprint",
         filter: ["in", ["geometry-type"], ["literal", ["Polygon", "LineString"]]],
-        paint: { "line-color": "#000", "line-width": 1.5, "line-opacity": 0.6 },
+        paint: { "line-color": latest.alertHex, "line-width": 1.5, "line-opacity": 0.6 },
       });
       map.addLayer({
         id: "footprint-point",
@@ -222,9 +255,9 @@ export default function MapCanvas({
         source: "aegis-footprint",
         filter: ["==", ["geometry-type"], "Point"],
         paint: {
-          "circle-color": "#000",
+          "circle-color": latest.alertHex,
           "circle-opacity": 0.15,
-          "circle-stroke-color": "#000",
+          "circle-stroke-color": latest.alertHex,
           "circle-stroke-width": 1.5,
           "circle-stroke-opacity": 0.6,
           "circle-radius": 10,
@@ -245,19 +278,20 @@ export default function MapCanvas({
       type: "FeatureCollection",
       features: footprintFeatures,
     } as unknown as GeoJSONInput);
+
     for (const [layerId, property, color] of [
       ["footprint-fill", "fill-color", latest.alertHex],
       ["footprint-line", "line-color", latest.alertHex],
       ["footprint-point", "circle-color", latest.alertHex],
       ["footprint-point", "circle-stroke-color", latest.alertHex],
     ] as const) {
-      // MapLibre's dependent paint types collapse on a union key; the values
-      // here are literal spec-valid names, so bridge with `as never`.
-      (map.setPaintProperty as unknown as (
-        layer: string,
-        name: string,
-        value: string,
-      ) => void)(layerId, property, color);
+      if (map.getLayer(layerId)) {
+        (map.setPaintProperty as unknown as (
+          layer: string,
+          name: string,
+          value: string,
+        ) => void)(layerId, property, color);
+      }
     }
 
     // Event centre ---------------------------------------------------
@@ -275,7 +309,7 @@ export default function MapCanvas({
         source: "aegis-centre",
         paint: {
           "circle-radius": 5,
-          "circle-color": "#000",
+          "circle-color": latest.alertHex,
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
         },
@@ -298,26 +332,27 @@ export default function MapCanvas({
           ]
         : [],
     } as unknown as GeoJSONInput);
-    map.setPaintProperty("centre-dot", "circle-color", latest.alertHex);
+    if (map.getLayer("centre-dot")) {
+      map.setPaintProperty("centre-dot", "circle-color", latest.alertHex);
+    }
 
     // Asset pins ------------------------------------------------------
     if (!map.getSource("aegis-assets")) {
       map.addSource("aegis-assets", { type: "geojson", data: EMPTY_INPUT });
-      // Real assets: solid tier-coloured dot with the white ring (DESIGN 10).
+      // Real assets: solid tier-coloured dot with white ring (DESIGN 10).
       map.addLayer({
         id: "assets-solid",
         type: "circle",
         source: "aegis-assets",
         filter: ["==", ["get", "synthetic"], false],
         paint: {
-          "circle-color": tierColorExpression() as never, // data-driven match expr
+          "circle-color": tierColorExpression() as never,
           "circle-radius": 6,
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
         },
       });
-      // Modeled fallbacks: hollow tier-coloured ring (this MapLibre version
-      // has no dashed circle stroke, so "hollow" carries the distinction).
+      // Modeled fallbacks: hollow tier-coloured ring.
       map.addLayer({
         id: "assets-hollow",
         type: "circle",
@@ -326,7 +361,7 @@ export default function MapCanvas({
         paint: {
           "circle-color": "transparent",
           "circle-radius": 7,
-          "circle-stroke-color": tierColorExpression() as never, // data-driven
+          "circle-stroke-color": tierColorExpression() as never,
           "circle-stroke-width": 2,
         },
       });
@@ -353,10 +388,9 @@ export default function MapCanvas({
     );
 
     // Ping ring markers: CRITICAL/HIGH only, max 15, gated in lite motion
-    // and under prefers-reduced-motion.
     for (const ping of pingsRef.current) ping.remove();
-
     pingsRef.current = [];
+
     if (!latest.lite && !latest.reducedMotion) {
       const targets = latest.assets
         .filter(
@@ -388,7 +422,7 @@ export default function MapCanvas({
       }
     }
 
-    // Fit bounds to footprint + assets (jumpTo instead in lite mode).
+    // Fit bounds to footprint + assets (jumpTo in lite mode)
     const points: [number, number][] = [];
     for (const feature of latest.footprint ?? []) {
       collectLngLat(feature.coordinates, points);
@@ -411,15 +445,8 @@ export default function MapCanvas({
   }, [readyKey, event, footprint, assets, alertHex, lite, reducedMotion, failed]);
 
   // ------------------------------------------------------------------
-  // Map lifecycle. CARTO Dark Matter first; on style error or 8 s timeout,
-  // one retry with the inline tile-free fallback. Never crash: context
-  // creation failures surface as "Map unavailable on this device".
-  //
-  // Sizing: the map container is `absolute inset-0` inside a `relative`
-  // parent with a real height (ImpactMapPanel), so it normally sizes on
-  // creation. If it is ever created inside a zero-height/hidden container,
-  // MapLibre falls back to a 300 px canvas; defer creation until the
-  // container reports non-zero clientHeight, then init.
+  // Map lifecycle: CARTO Dark Matter vector first; on style failure or
+  // timeout, gracefully fallback to CARTO raster tiles (DESIGN §10).
   // ------------------------------------------------------------------
   useEffect(() => {
     const container = containerRef.current;
@@ -429,7 +456,7 @@ export default function MapCanvas({
     let fallbackTried = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let map: MapLibreMap | null = null;
-    let settled = false; // guards fail() firing after a successful load
+    let settled = false;
     let observer: ResizeObserver | null = null;
 
     const stopObserving = (): void => {
@@ -446,8 +473,6 @@ export default function MapCanvas({
         if (disposed) return;
         for (const entry of entries) {
           if (entry.target !== container) continue;
-          // A zero-height container would shrink the canvas back to the
-          // 300 px fallback, so only resize when the container has size.
           if (entry.contentRect.height > 0 || entry.contentRect.width > 0) {
             instance.resize();
           }
@@ -463,28 +488,42 @@ export default function MapCanvas({
           customAttribution:
             "MapLibre · GDACS · Open-Meteo · Esri · OpenStreetMap contributors · CARTO",
         }),
+        "bottom-right",
       );
+      instance.addControl(
+        new NavigationControl({ showCompass: false }),
+        "top-right",
+      );
+
       timer = setTimeout(() => {
         if (!disposed && !settled) fail();
-      }, 8000);
-      instance.on("error", (e: unknown) => {
-        if (!disposed && !settled) fail();
+      }, 7000);
+
+      instance.on("error", (ev: { error?: { message?: string } }) => {
+        if (!disposed && !settled) {
+          const msg = ev?.error?.message ?? "";
+          if (
+            msg.includes("style") ||
+            msg.includes("Failed to fetch") ||
+            msg.includes("NetworkError")
+          ) {
+            fail();
+          }
+        }
       });
+
       instance.on("style.load", () => {
         settled = true;
         if (timer) clearTimeout(timer);
       });
+
       instance.on("load", () => {
         settled = true;
         if (timer) clearTimeout(timer);
-        // Real height is in place only after mount/layout; resize once now
-        // so the canvas matches the panel size.
         instance.resize();
-        // Re-run the data effect so footprint/pin layers are added on this
-        // style (and re-added after a fallback swap).
         if (!disposed) setReadyKey((key) => key + 1);
 
-        // Tooltip on hover over real or modeled pins (VELOS hotspot style).
+        // Tooltip on hover over real or modeled pins
         instance.on("mousemove", ["assets-solid", "assets-hollow"], (e: MapLayerMouseEvent) => {
           const feature = e.features?.[0];
           if (!feature) return;
@@ -503,6 +542,7 @@ export default function MapCanvas({
             .setLngLat(e.lngLat)
             .addTo(instance);
         });
+
         instance.on("mouseleave", ["assets-solid", "assets-hollow"], () => {
           ensurePopup().remove();
         });
@@ -511,12 +551,11 @@ export default function MapCanvas({
 
     const fail = () => {
       if (settled) return;
-      settled = true;
       if (timer) clearTimeout(timer);
       stopObserving();
       if (map && mapRef.current === map) {
         map.remove();
-        mapRef.current = null; // never reuse a removed map instance
+        mapRef.current = null;
       }
       map = null;
       if (disposed) return;
@@ -525,22 +564,23 @@ export default function MapCanvas({
         return;
       }
       fallbackTried = true;
-      const begin = () => {
+      settled = false;
+
+      const beginFallback = () => {
         const instance = new MapLibreMap({
           container,
-          style: FALLBACK_STYLE,
+          style: RASTER_FALLBACK_STYLE,
           attributionControl: false,
         });
         map = instance;
-        mapRef.current = instance; // ready for the data/focus effects
+        mapRef.current = instance;
         wire(instance);
         startObserving(instance);
-        // Re-run the data effect so footprint/pin layers are re-added on the
-        // swapped-in fallback style.
         if (!disposed) setReadyKey((key) => key + 1);
       };
+
       try {
-        begin();
+        beginFallback();
       } catch {
         if (!disposed) setFailed(true);
       }
@@ -554,22 +594,15 @@ export default function MapCanvas({
           attributionControl: false,
         });
         map = instance;
-        mapRef.current = instance; // ready for the data/focus effects
+        mapRef.current = instance;
         wire(instance);
         startObserving(instance);
       } catch {
-        // Constructor throws when WebGL cannot initialise (no WebGL context):
-        // no fallback style helps, so the panel reports it outside of the
-        // synchronous effect path.
-        window.queueMicrotask(() => {
-          if (!disposed) setFailed(true);
-        });
+        // If vector constructor throws (e.g. WebGL context limit or failure), try raster fallback
+        fail();
       }
     };
 
-    // Defer creation until the container has a real size so the canvas is not
-    // created at MapLibre's 300 px fallback height. When the container is
-    // already sized (the normal case) this creates the map synchronously.
     if (container.clientHeight === 0 && container.clientWidth === 0) {
       if (typeof ResizeObserver !== "undefined") {
         observer = new ResizeObserver((entries) => {
@@ -599,12 +632,10 @@ export default function MapCanvas({
       popupRef.current?.remove();
       if (map && mapRef.current === map) {
         map.remove();
-        mapRef.current = null; // never reuse a removed map instance
+        mapRef.current = null;
       }
       map = null;
     };
-    // Re-create only when the selected event identity changes; data, props
-    // and motion flags are applied by the data effect without a rebuild.
   }, [event?.id, event?.episodeId]);
 
   // ------------------------------------------------------------------
@@ -624,7 +655,6 @@ export default function MapCanvas({
     } else {
       map.flyTo({ center, zoom: 12, duration: 900, essential: true });
     }
-    // Focus carries a nonce; the map may not exist until readyKey bumps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus?.nonce, readyKey, failed]);
 
@@ -642,7 +672,7 @@ export default function MapCanvas({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0"
+      className="absolute inset-0 h-full w-full"
       role="application"
       aria-label="Impact footprint and asset map"
     />

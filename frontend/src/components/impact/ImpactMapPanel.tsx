@@ -103,7 +103,7 @@ export function ImpactMapPanel({
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-neutral-900 via-transparent to-neutral-900/20"
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-neutral-950/70 via-transparent to-neutral-950/20"
       />
 
       {/* Overlay chips: footprint status (top-left), Demo/Live (bottom-left). */}

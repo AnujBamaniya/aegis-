@@ -5,6 +5,7 @@ import { SiteNav } from "@/components/layout/SiteNav";
 import { EventsExplorer } from "@/components/workspace/EventsExplorer";
 import { WorkspaceProvider } from "@/components/workspace/WorkspaceProvider";
 import { ImpactWorkspace } from "@/components/impact/ImpactWorkspace";
+import { BriefingSection } from "@/components/briefing/BriefingSection";
 
 /**
  * Aegis Matrix landing page (PLAN P3). Fixed pill nav, gradient hero, the
@@ -91,12 +92,15 @@ export default function Home() {
                 <ImpactWorkspace />
               </div>
             </section>
+
+            <Divider />
+
+            <BriefingSection />
           </WorkspaceProvider>
         </Suspense>
 
         <Divider />
 
-        {/* Anchor placeholders for P4-P5 sections; ids keep the nav honest. */}
         <div id="infrastructure" className="h-px scroll-mt-24" />
         <div id="pipeline" className="h-px scroll-mt-24" />
         <div id="access" className="h-px scroll-mt-24" />
