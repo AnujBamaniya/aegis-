@@ -61,7 +61,7 @@ export default function RootLayout({
         <ScrollReveal />
         <Script
           src="https://www.aura.build/FxFilter.js"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <div aria-hidden="true" className="bg-grain" />
       </body>

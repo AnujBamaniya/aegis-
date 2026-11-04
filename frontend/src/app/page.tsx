@@ -6,13 +6,18 @@ import { EventsExplorer } from "@/components/workspace/EventsExplorer";
 import { WorkspaceProvider } from "@/components/workspace/WorkspaceProvider";
 import { ImpactWorkspace } from "@/components/impact/ImpactWorkspace";
 import { BriefingSection } from "@/components/briefing/BriefingSection";
+import { InfrastructureSection } from "@/components/infrastructure/InfrastructureSection";
+import { Pipeline } from "@/components/pipeline/Pipeline";
+import { CoreSystems } from "@/components/systems/CoreSystems";
+import { Access } from "@/components/access/Access";
+import { Footer } from "@/components/footer/Footer";
 
 /**
- * Aegis Matrix landing page (PLAN P3). Fixed pill nav, gradient hero, the
- * Active Threats board and the impact workspace fed by the dataSource through
- * ONE WorkspaceProvider so selection and the channel filter stay in sync.
- * Later sections (infrastructure, pipeline, access) are anchor placeholders
- * until their phases land.
+ * Aegis Matrix landing page (PLAN P1-P5).
+ * Fixed pill nav, gradient hero, and sections linked by one WorkspaceProvider
+ * so threat selection, filter channels and queries stay in sync across:
+ * Active Threats -> Impact Workspace -> AI Briefing -> Vulnerability Index -> Pipeline.
+ * Followed by Core Systems, Audience Access, and the Mission Control Footer.
  */
 function BoardSkeleton() {
   return (
@@ -60,13 +65,12 @@ export default function Home() {
       <SiteNav />
       <Hero />
 
-      <main>
+      <main id="top">
         <Divider />
 
-        {/* Active Threats board (P2) + Impact workspace (P3) share the same
-            workspace state, so the featured threat is the mapped event. */}
         <Suspense fallback={<BoardSkeleton />}>
           <WorkspaceProvider>
+            {/* 1. Active Threats board (P2) */}
             <section
               id="threats"
               className="w-full border-t border-white/5 bg-neutral-950 py-16 scroll-mt-24 md:py-24"
@@ -78,11 +82,11 @@ export default function Home() {
 
             <Divider />
 
+            {/* 2. Impact workspace (P3) */}
             <section
               id="impact"
               className="relative w-full scroll-mt-24 bg-neutral-950 py-16 md:py-24"
             >
-              {/* Nav "Live Map" and "Impact" both anchor here. */}
               <span
                 id="live-map"
                 aria-hidden="true"
@@ -95,15 +99,35 @@ export default function Home() {
 
             <Divider />
 
+            {/* 3. AI Forecast & Briefing (P4) */}
             <BriefingSection />
+
+            <Divider />
+
+            {/* 4. Vulnerability Index (P5) */}
+            <InfrastructureSection />
+
+            <Divider />
+
+            {/* 5. Processing Pipeline (P5) */}
+            <Pipeline />
           </WorkspaceProvider>
         </Suspense>
 
         <Divider />
 
-        <div id="infrastructure" className="h-px scroll-mt-24" />
-        <div id="pipeline" className="h-px scroll-mt-24" />
-        <div id="access" className="h-px scroll-mt-24" />
+        {/* 6. Core Systems (P5) */}
+        <CoreSystems />
+
+        <Divider />
+
+        {/* 7. Audience Access (P5) */}
+        <Access />
+
+        <Divider />
+
+        {/* 8. Mission Control Footer (P5) */}
+        <Footer />
       </main>
     </>
   );

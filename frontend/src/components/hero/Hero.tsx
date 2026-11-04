@@ -73,7 +73,7 @@ export function Hero() {
           {/* One h1: readable full phrase is sr-only; the huge display lines
               are decorative. Line 1 — delay 1.4s, line 2 — delay 1.6s. The "&"
               is a decorative italic glyph carrying no content. */}
-          <h1 className="font-bricolage text-[clamp(3.5rem,10vw,9rem)] font-medium leading-[0.95] tracking-tighter text-white">
+          <h1 className="font-bricolage text-[clamp(3.5rem,9vw,7.25rem)] font-medium leading-[0.95] tracking-tighter text-white">
             <span className="sr-only">Predict and protect</span>
             <span aria-hidden="true">
               <span className="block drop-shadow-2xl opacity-0 animate-slide-up [animation-delay:1.4s]">

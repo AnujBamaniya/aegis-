@@ -189,6 +189,20 @@ body {
   animation-iteration-count: infinite;
 }
 
+/* 3D card utilities for Core Systems (Tailwind v4) */
+@utility perspective-midrange {
+  perspective: 800px;
+}
+@utility transform-3d {
+  transform-style: preserve-3d;
+}
+@utility rotate-x-12 {
+  transform: rotateX(12deg);
+}
+@utility rotate-y-12 {
+  transform: rotateY(12deg);
+}
+
 /* Risk tier chips (DESIGN 3.3). Never convey severity by color alone:
    always pair these classes with a visible text label. */
 .tier-critical { @apply border border-red-500/30 bg-red-500/20 text-red-400; }
@@ -203,6 +217,21 @@ body {
 }
 [data-perf="lite"] .fx-glow {
   display: none;
+}
+
+/* Core-system card motion gate (P5): .fx-anim marks decorative loops
+   (spin / pulse) that stop in lite mode and under reduced motion. */
+[data-perf="lite"] .fx-anim {
+  animation: none !important;
+}
+/* Equalizer bars render static in lite mode (reduced motion already handled). */
+[data-perf="lite"] .bar-anim {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-anim {
+    animation: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
