@@ -1,15 +1,15 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import {
-  useWorkspace,
-  useWorkspaceSelectedId,
-} from "@/components/workspace/WorkspaceProvider";
+import { useEffect, useSyncExternalStore } from "react";
+import { useWorkspace, useWorkspaceSelectedId } from "@/components/workspace/WorkspaceProvider";
 import { useEventsFeed } from "@/hooks/useEventsFeed";
 import { useInfrastructureQuery } from "@/hooks/useImpactQueries";
 import { getCached, getState, subscribe } from "@/lib/briefingModule";
 import type { AegisEvent } from "@/lib/adapters";
 import type { MockCase } from "@/lib/dataSource";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { prefersReducedMotion, EASE_OUT } from "@/lib/motion";
 
 interface PipelineStage {
   id: string;
@@ -111,25 +111,27 @@ function getBriefStatus(
 type StatusVariant = "idle" | "loading" | "live" | "empty" | "error";
 
 function StatusChip({ variant, label }: { variant: StatusVariant; label: string }) {
-  const base = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest";
+  const base = "inline-flex items-center gap-1.5 rounded-[3.6px] border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em]";
   const variants: Record<StatusVariant, string> = {
-    idle: "bg-white/5 border border-white/10 text-white/50",
-    loading: "bg-amber-500/10 border border-amber-500/30 text-amber-400",
-    live: "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400",
-    empty: "bg-blue-500/10 border border-blue-500/30 text-blue-400",
-    error: "bg-red-500/10 border border-red-500/30 text-red-400",
+    idle: "bg-bone-vellum/5 border-iron-filings text-drift-ash",
+    loading: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+    live: "bg-lime-surveyor/10 border-lime-surveyor/30 text-lime-surveyor",
+    empty: "bg-blue-500/10 border-blue-500/30 text-blue-400",
+    error: "bg-red-500/10 border-red-500/30 text-red-400",
   };
   return <span className={`${base} ${variants[variant]}`}>{label}</span>;
 }
 
-function PipelineNode({ number, isActive }: { number: string; isActive: boolean }) {
+function PipelineNode({ isActive }: { isActive: boolean }) {
   return (
-    <div
-      className={`relative w-12 h-12 rounded-full bg-neutral-900 border border-white/20 z-10 flex items-center justify-center text-white font-mono text-xs shadow-[0_0_20px_rgba(255,255,255,0.1)] ${isActive ? "bg-emerald-500/20 border-emerald-500/40" : ""}`}
+    <span
       aria-hidden="true"
-    >
-      {number}
-    </div>
+      className={`relative z-10 block h-3 w-3 rounded-[3.6px] ${
+        isActive
+          ? "bg-lime-surveyor"
+          : "border border-iron-filings"
+      }`}
+    />
   );
 }
 
@@ -148,36 +150,38 @@ function PipelineStage({
 
   return (
     <div
-      className="relative flex flex-col md:flex-row items-center justify-between py-10 md:py-14 group animate-on-scroll"
-      data-anim={isRight ? "slide-right" : "slide-left"}
-      style={{ animationDelay: `${index * 100}ms` }}
+      className="relative flex flex-col md:flex-row items-center justify-between py-10 md:py-14"
+      data-gsap-item
     >
       {/* Text side */}
       <div
-        className={`w-full md:w-5/12 pr-0 md:pr-12 order-2 md:order-1 text-center md:text-right ${isRight ? "md:order-2" : ""}`}
+        className={`w-full md:w-5/12 pr-0 md:pr-12 order-2 md:order-1 text-center md:text-right ${isRight ? "md:order-3" : ""}`}
       >
-        <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1/2 h-px bg-white/10 md:hidden" />
-        <h3 className="text-3xl font-bricolage text-white tracking-tight">
+        <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1/2 h-px bg-iron-filings/70 md:hidden" aria-hidden="true" />
+        <h3 className="text-3xl font-light leading-[1.05] tracking-[-0.03em] text-bone-vellum">
           {stage.title}
         </h3>
-        <p className="mt-2 font-light text-neutral-400">{stage.description}</p>
-        <StatusChip variant={status.variant} label={status.label} />
+        <p className="mt-2 text-sm font-light leading-relaxed text-drift-ash">{stage.description}</p>
+        <div className="mt-3">
+          <StatusChip variant={status.variant} label={status.label} />
+        </div>
       </div>
 
       {/* Center line + node */}
-      <div className="relative w-12 h-12 rounded-full z-10 order-1 md:order-2 mb-6 md:mb-0 flex-shrink-0">
-        <PipelineNode number={stage.number} isActive={status.variant === "live"} />
+      <div className="relative z-10 order-1 mb-6 flex h-6 w-6 flex-shrink-0 items-center justify-center md:order-2 md:mb-0">
+        <PipelineNode isActive={status.variant === "live"} />
         {/* Vertical connector line */}
         {!isLast && (
           <div
-            className="absolute left-1/2 top-full w-px h-full bg-white/10 md:hidden"
+            className="absolute left-1/2 top-full h-[5.5rem] w-px -translate-x-1/2 bg-iron-filings md:hidden"
             aria-hidden="true"
           />
         )}
         {/* Horizontal connector on md+ */}
         <div
-          className="hidden md:absolute md:top-1/2 md:-translate-y-1/2 md:w-1/2 h-px bg-white/10"
-          style={isRight ? { right: "100%" } : { left: "100%" }}
+          className={`hidden md:absolute md:top-1/2 md:block md:h-px md:w-1/2 md:-translate-y-1/2 bg-iron-filings ${
+            isRight ? "md:right-full" : "md:left-full"
+          }`}
           aria-hidden="true"
         />
       </div>
@@ -187,10 +191,7 @@ function PipelineStage({
         className={`w-full md:w-5/12 pl-0 md:pl-12 order-3 ${isRight ? "md:order-1" : ""} flex items-center justify-center md:justify-start`}
         aria-hidden="true"
       >
-        <span
-          className="anim-delay-300 animate-on-scroll text-[7rem] leading-none font-bricolage font-bold tracking-tighter text-white/5 select-none pointer-events-none md:text-[10rem]"
-          data-anim={isRight ? "slide-left" : "slide-right"}
-        >
+        <span className="pointer-events-none select-none font-sans text-[7rem] font-light leading-none tracking-tighter text-bone-vellum/[0.05] md:text-[10rem]">
           {stage.number}
         </span>
       </div>
@@ -232,46 +233,78 @@ export function Pipeline() {
   const predictStatus = getPredictStatus(selectedEvent, mockCase, briefingRunning, briefingError);
   const briefStatus = getBriefStatus(selectedEvent, mockCase, briefingRunning, briefingError);
 
+  // Pinned scroll sequence: pin the stage list, scrub ghost-numeral / marker motion.
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const list = document.querySelector<HTMLElement>("[data-gsap='stagger']");
+    if (!list) return;
+    const st = ScrollTrigger.create({
+      trigger: list,
+      pin: true,
+      start: "top top",
+      end: "+=300%",
+      scrub: 0.6,
+      anticipatePin: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const stageIndex = Math.min(
+          Math.floor(progress * STAGES.length),
+          STAGES.length - 1,
+        );
+        const marker = list.querySelector<HTMLElement>("[data-pipeline-marker]");
+        if (marker) {
+          const rail = list.querySelector<HTMLElement>("[data-pipeline-rail]");
+          if (rail) {
+            const railRect = rail.getBoundingClientRect();
+            const markerOffset = railRect.height / STAGES.length;
+            const y = markerOffset * (stageIndex + 1);
+            gsap.set(marker, { y });
+          }
+        }
+        list.querySelectorAll<HTMLElement>("[data-pipeline-stage]").forEach((el) => {
+          const idx = Number(el.getAttribute("data-pipeline-stage") ?? "-1");
+          const isActive = idx === stageIndex;
+          const title = el.querySelector<HTMLElement>("[data-pipeline-title]");
+          const tag = el.querySelector<HTMLElement>("[data-pipeline-tag]");
+          const inactive = 0.4;
+          if (title) {
+            gsap.to(title, {
+              opacity: isActive ? 1 : inactive,
+              color: isActive ? "#f4f3e8" : undefined,
+              duration: 0.4,
+              ease: EASE_OUT,
+            });
+          }
+          if (tag) {
+            gsap.to(tag, { opacity: isActive ? 1 : inactive, duration: 0.4, ease: EASE_OUT });
+          }
+        });
+      },
+    });
+    return () => st.kill();
+  }, []);
+
   return (
     <section
       id="pipeline"
-      className="relative w-full scroll-mt-24 bg-neutral-950 border-t border-white/5 py-16 md:py-24"
+      className="relative w-full scroll-mt-24 border-t border-iron-filings py-16 md:py-24"
     >
-      {/* Dot grid background */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      <div className="relative z-10 mx-auto w-full max-w-360 px-6 md:px-12">
-        {/* Section header (centered per DESIGN 8.8) */}
-        <div className="mb-16 max-w-2xl mx-auto text-center animate-on-scroll">
-          <p className="mb-4 flex items-center justify-center gap-3 text-emerald-400">
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-emerald-400/80">
-              Processing pipeline
-            </span>
-            <span className="h-[1px] w-8 bg-emerald-500/30" />
-          </p>
-          <h2 className="font-bricolage text-5xl md:text-7xl font-semibold tracking-tight text-white">
-            Pipeline
-          </h2>
-          <p className="mt-4 font-light leading-relaxed text-white/50 max-w-xl mx-auto">
-            Four deterministic stages from live hazard feed to executable briefing.
-          </p>
-        </div>
+      <div className="mx-auto w-full max-w-360 px-6 md:px-12">
+        <SectionHeader
+          index="05"
+          eyebrow="Processing chain"
+          title="Intelligence pipeline"
+          description="Four deterministic stages carry the live hazard feed from ingestion to an executive briefing."
+          className="mb-12"
+        />
 
         {/* Centered vertical line on md+ */}
         <div
-          className="hidden md:absolute md:left-1/2 md:top-0 md:bottom-0 md:w-px md:bg-white/10 md:-translate-x-1/2"
+          className="hidden md:absolute md:block md:left-1/2 md:top-0 md:bottom-0 md:w-px md:bg-iron-filings md:-translate-x-1/2"
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center">
+        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center" data-gsap="stagger">
           {STAGES.map((stage, index) => (
             <PipelineStage
               key={stage.id}

@@ -10,6 +10,9 @@ import React from "react";
  * - numbered lists (1. ) (<ol><li>...</li></ol>)
  *
  * No innerHTML, no links, no images, no raw HTML.
+ *
+ * Styling follows the flat lime system (Inversa revamp): bone-vellum headings
+ * and body, no purple, no glass, no rounded chrome.
  */
 export function MarkdownBrief({ text }: { text: string }) {
   const lines = text.split("\n");
@@ -28,7 +31,7 @@ export function MarkdownBrief({ text }: { text: string }) {
           result.push(
             <React.Fragment key={keyCounter++}>
               {bold ? (
-                <strong className="font-medium text-white">{currentText}</strong>
+                <strong className="font-medium text-bone-vellum">{currentText}</strong>
               ) : (
                 <span>{currentText}</span>
               )}
@@ -48,7 +51,7 @@ export function MarkdownBrief({ text }: { text: string }) {
       result.push(
         <React.Fragment key={keyCounter++}>
           {bold ? (
-            <strong className="font-medium text-white">{currentText}</strong>
+            <strong className="font-medium text-bone-vellum">{currentText}</strong>
           ) : (
             <span>{currentText}</span>
           )}
@@ -67,8 +70,8 @@ export function MarkdownBrief({ text }: { text: string }) {
     const isOrdered = currentListType === "number";
     const Tag = isOrdered ? "ol" : "ul";
     const listClass = isOrdered
-      ? "mb-4 list-decimal list-outside pl-5 text-white/70 space-y-1"
-      : "mb-4 list-disc list-outside pl-5 text-white/70 space-y-1";
+      ? "mb-4 list-decimal list-outside pl-5 text-bone-vellum/90 space-y-1"
+      : "mb-4 list-disc list-outside pl-5 text-bone-vellum/90 space-y-1";
 
     nodes.push(
       <Tag key={keyCounter++} className={listClass}>
@@ -99,7 +102,7 @@ export function MarkdownBrief({ text }: { text: string }) {
       nodes.push(
         <h3
           key={keyCounter++}
-          className="mt-4 mb-2 font-bricolage text-base font-medium tracking-tight text-white/90"
+          className="mt-4 mb-2 font-sans text-base font-medium tracking-tight text-bone-vellum"
         >
           {parseInline(headingContent)}
         </h3>,
@@ -114,7 +117,7 @@ export function MarkdownBrief({ text }: { text: string }) {
       nodes.push(
         <h2
           key={keyCounter++}
-          className="mt-5 mb-2 font-bricolage text-lg font-medium tracking-tight text-white"
+          className="mt-5 mb-2 font-sans text-lg font-medium tracking-tight text-bone-vellum"
         >
           {parseInline(headingContent)}
         </h2>,
@@ -147,7 +150,7 @@ export function MarkdownBrief({ text }: { text: string }) {
     // Plain paragraph
     flushList();
     nodes.push(
-      <p key={keyCounter++} className="mb-4 font-light leading-relaxed text-white/70">
+      <p key={keyCounter++} className="mb-4 font-light leading-relaxed text-bone-vellum/90">
         {parseInline(trimmed)}
       </p>,
     );

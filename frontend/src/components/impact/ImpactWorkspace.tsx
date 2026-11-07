@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MapPinIcon } from "@/components/icons";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TypeChips } from "@/components/workspace/EventCards";
 import {
   EVENT_TYPE_LABEL,
@@ -34,7 +34,7 @@ import type { AegisAsset } from "@/lib/adapters";
 import { RegionError, CalmNote, errorMessageOf } from "@/components/ui/RegionStates";
 
 const SECTION_LABEL =
-  "mb-3 font-mono text-[10px] uppercase tracking-widest text-white/70";
+  "mb-3 font-mono text-[10px] uppercase tracking-widest text-drift-ash";
 
 /**
  * Impact workspace (PLAN P3): selected event summary, risk-tier summary and
@@ -98,29 +98,16 @@ export function ImpactWorkspace() {
 
   return (
     <div>
-      {/* Section header (DESIGN 8.4), same recipe as Active threats. */}
-      <div className="relative min-w-0 lg:max-w-xl">
-        <span
-          aria-hidden="true"
-          className="absolute -left-4 top-1 bottom-1 w-1 bg-gradient-to-b from-emerald-500 to-transparent opacity-50 md:-left-8"
-        />
-        <p className="mb-4 flex items-center gap-3 text-emerald-400">
-          <MapPinIcon className="h-4 w-4" aria-hidden="true" />
-          <span className="font-mono text-xs uppercase tracking-[0.2em] text-emerald-400/80">
-            Live map
-          </span>
-        </p>
-        <h2 className="font-bricolage text-4xl font-medium tracking-tight text-white md:text-5xl">
-          Impact{" "}
-          <span className="font-light text-neutral-500">workspace</span>
-        </h2>
-        <p className="mt-4 font-light leading-relaxed text-white/50">
-          The selected threat from the board above, its published footprint and
-          every critical asset inside the scan window, tiered by distance.
-        </p>
-      </div>
+      {/* Section header — shared editorial recipe (DESIGN 8.4). */}
+      <SectionHeader
+        index="02"
+        eyebrow="Impact workspace"
+        title="Geospatial impact"
+        description="The selected threat from the board above, its published footprint and every critical asset inside the scan window, tiered by distance."
+        className="mb-12"
+      />
 
-      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
         {/* Left: summary, tiers, asset list -------------------------------- */}
         <div className="flex flex-col gap-6 lg:col-span-5">
           <p
@@ -137,13 +124,13 @@ export function ImpactWorkspace() {
 
           {selected ? (
             <>
-              {/* Selected event summary */}
-              <div className="glass rounded-3xl p-6">
+              {/* Selected event summary: flat hairline panel, chips on top. */}
+              <div className="border border-iron-filings/70 bg-obsidian-loam/40 p-6">
                 <TypeChips event={selected} />
-                <h3 className="mt-4 font-bricolage text-2xl font-medium tracking-tight text-white">
+                <h3 className="mt-4 text-2xl font-light tracking-[-0.03em] text-bone-vellum">
                   {selected.name}
                 </h3>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-white/60">
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-drift-ash">
                   {formatCoords(selected)}
                   {selected.country ? ` · ${selected.country}` : ""}
                 </p>
@@ -178,7 +165,7 @@ export function ImpactWorkspace() {
                 <p className={SECTION_LABEL}>
                   Assets in scan window
                   {infrastructure.isError ? null : (
-                    <span className="ml-2 text-neutral-400">
+                    <span className="ml-2 tabular-nums text-bone-vellum">
                       {infrastructure.data ? `${infrastructure.data.length}` : "—"}
                     </span>
                   )}
@@ -188,8 +175,11 @@ export function ImpactWorkspace() {
                     {[0, 1, 2, 3].map((index) => (
                       <div
                         key={index}
-                        className="h-16 animate-pulse rounded-xl bg-white/5"
-                      />
+                        className="border border-iron-filings/70 bg-obsidian-loam/40 p-3"
+                      >
+                        <div className="h-3 w-1/3 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
+                        <div className="mt-2 h-2.5 w-1/2 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
+                      </div>
                     ))}
                   </div>
                 ) : infrastructure.isError ? (
@@ -246,7 +236,7 @@ export function ImpactWorkspace() {
               dataLoading={dataLoading}
             />
           ) : (
-            <div className="glass relative h-[420px] overflow-hidden rounded-3xl lg:h-[560px]">
+            <div className="relative h-[420px] overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40 lg:h-[560px]">
               <CalmNote>Select a threat above to see its impact.</CalmNote>
             </div>
           )}

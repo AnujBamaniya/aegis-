@@ -9,7 +9,7 @@ export function Divider({ children }: { children?: ReactNode }) {
     <div className="z-20 w-full py-12">
       <div
         aria-hidden="true"
-        className="mx-auto h-px w-3/4 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent"
+        className="mx-auto h-px w-3/4 bg-gradient-to-r from-transparent via-iron-filings to-transparent"
       />
       {children ? (
         <div className="mx-auto w-full max-w-7xl px-6 pt-8 md:px-12">

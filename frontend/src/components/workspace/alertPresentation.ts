@@ -9,7 +9,12 @@ export type AlertPresentation = {
   label: string;
   /** Small status dot tint. */
   dot: string;
-  /** Chip tint (border + bg + text). */
+  /**
+   * Chip tint (border + bg + text). Retinted in the Inversa revamp:
+   * semantic severity still carries data color (never color alone — the
+   * label always ships), but the glow shadows are gone: the flat system
+   * lets contrast carry emphasis.
+   */
   chip: string;
   /** Large-card backdrop tint. */
   backdrop: string;
@@ -20,31 +25,31 @@ export type AlertPresentation = {
 const NEUTRAL: AlertPresentation = {
   label: "No alert level",
   dot: "bg-white/30",
-  chip: "border border-white/10 bg-white/5 text-neutral-400",
+  chip: "border-iron-filings text-drift-ash",
   backdrop: "from-white/10 to-transparent",
-  tint: "rgba(255, 255, 255, 0.6)",
+  tint: "rgba(244, 243, 232, 0.6)",
 };
 
 const RED: AlertPresentation = {
   label: "GDACS Red",
-  dot: "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]",
-  chip: "border border-red-500/30 bg-red-500/20 text-red-400",
+  dot: "bg-red-500",
+  chip: "border-red-500/40 bg-red-500/10 text-red-400",
   backdrop: "from-red-500/15 to-transparent",
   tint: "#ef4444",
 };
 
 const ORANGE: AlertPresentation = {
   label: "GDACS Orange",
-  dot: "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]",
-  chip: "border border-amber-500/30 bg-amber-500/20 text-amber-400",
+  dot: "bg-amber-500",
+  chip: "border-amber-500/40 bg-amber-500/10 text-amber-400",
   backdrop: "from-amber-500/15 to-transparent",
   tint: "#f59e0b",
 };
 
 const GREEN: AlertPresentation = {
   label: "GDACS Green",
-  dot: "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]",
-  chip: "border border-emerald-500/30 bg-emerald-500/20 text-emerald-400",
+  dot: "bg-emerald-500",
+  chip: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
   backdrop: "from-emerald-500/15 to-transparent",
   tint: "#10b981",
 };

@@ -10,7 +10,7 @@ export function BlueprintGrid() {
         {[0, 1, 2, 3, 4].map((index) => (
           <div
             key={index}
-            className={`h-full w-px bg-white/15 ${
+            className={`h-full w-px bg-bone-vellum/[0.06] ${
               index === 1 || index === 2 || index === 3 ? "hidden md:block" : ""
             }`}
           />

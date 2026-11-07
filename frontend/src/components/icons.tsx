@@ -130,7 +130,7 @@ export function HealthIcon(props: IconProps) {
 export function EmergencyIcon(props: IconProps) {
   return (
     <Svg {...props}>
-      <path d="M18 8a2 2 0 0 0 1-1.73 20 4 4 0 0 1-4 0 2 2 0 0 1-1-1.73V8" />
+      <path d="M18 8a2 2 0 0 0 1 -1.73A20 4 0 0 1 -4 0a2 2 0 0 1 -1 -1.73V8" />
       <path d="M6 8a6 6 0 0 1 12 0" />
       <path d="M6 12v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9" />
       <path d="M9 12v5" />
@@ -234,6 +234,27 @@ export function ShieldStarIcon(props: IconProps) {
     <Svg {...props}>
       <path d="M12 22s8-3.6 8-10V5.2L12 2.5 4 5.2V12c0 6.4 8 10 8 10z" />
       <path d="M12 8l1.5 3 3.3.5-2.4 2.3.6 3.2L12 15.5 9.1 18.2l.6-3.2L6 11.5l3.3-.5z" />
+    </Svg>
+  );
+}
+
+/** Mobile navigation menu trigger. */
+export function MenuIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </Svg>
+  );
+}
+
+/** Mobile navigation close. */
+export function CloseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m6 6 12 12" />
+      <path d="M18 6 6 18" />
     </Svg>
   );
 }

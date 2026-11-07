@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Divider } from "@/components/ui/Divider";
+import { BoardSkeleton } from "@/components/ui/BoardSkeleton";
 import { Hero } from "@/components/hero/Hero";
 import { SiteNav } from "@/components/layout/SiteNav";
 import { EventsExplorer } from "@/components/workspace/EventsExplorer";
@@ -11,122 +12,83 @@ import { Pipeline } from "@/components/pipeline/Pipeline";
 import { CoreSystems } from "@/components/systems/CoreSystems";
 import { Access } from "@/components/access/Access";
 import { Footer } from "@/components/footer/Footer";
+import { SectionMotion } from "@/components/motion/SectionMotion";
+import { MicroInteractions } from "@/components/motion/MicroInteractions";
+import { Preloader } from "@/components/motion/Preloader";
 
 /**
- * Aegis Matrix landing page (PLAN P1-P5).
- * Fixed pill nav, gradient hero, and sections linked by one WorkspaceProvider
- * so threat selection, filter channels and queries stay in sync across:
- * Active Threats -> Impact Workspace -> AI Briefing -> Vulnerability Index -> Pipeline.
- * Followed by Core Systems, Audience Access, and the Mission Control Footer.
+ * Aegis Matrix landing page. Fixed flat nav, WebGL globe hero, then a
+ * single WorkspaceProvider so threat selection, filter channels and queries
+ * stay in sync across: Active Threats -> Impact Workspace -> AI Briefing ->
+ * Vulnerability Index -> Pipeline. Followed by Core Systems, Audience
+ * Access, and the editorial footer. Section headers follow the Inversa
+ * recipe (SectionHeader); scroll motion is mounted once via SectionMotion.
  */
-function BoardSkeleton() {
-  return (
-    <div className="py-16 md:py-24">
-      <div className="mx-auto w-full max-w-360 px-6 md:px-12">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-          <div className="glass relative min-h-120 overflow-hidden rounded-3xl md:col-span-8">
-            <div aria-hidden="true" className="flex flex-col gap-4 p-8">
-              <div className="h-4 w-24 animate-pulse rounded bg-white/5" />
-              <div className="h-7 w-2/3 animate-pulse rounded bg-white/5" />
-              <div className="h-4 w-1/2 animate-pulse rounded bg-white/5" />
-            </div>
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-linear-to-r from-transparent via-white/5 to-transparent"
-            />
-          </div>
-          <div className="flex flex-col gap-6 md:col-span-4">
-            {[0, 1].map((index) => (
-              <div
-                key={index}
-                className="glass relative min-h-57 overflow-hidden rounded-3xl"
-              >
-                <div aria-hidden="true" className="flex flex-col gap-4 p-8">
-                  <div className="h-4 w-24 animate-pulse rounded bg-white/5" />
-                  <div className="h-7 w-2/3 animate-pulse rounded bg-white/5" />
-                  <div className="h-4 w-1/2 animate-pulse rounded bg-white/5" />
-                </div>
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-linear-to-r from-transparent via-white/5 to-transparent"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
     <>
+      <Preloader />
+      <MicroInteractions />
       <SiteNav />
       <Hero />
+      <SectionMotion />
 
       <main id="main">
         <Divider />
 
         <Suspense fallback={<BoardSkeleton />}>
           <WorkspaceProvider>
-            {/* 1. Active Threats board (P2) */}
-            <section
-              id="threats"
-              className="w-full border-t border-white/5 bg-neutral-950 py-16 scroll-mt-24 md:py-24"
-            >
-              <div className="mx-auto w-full max-w-360 px-6 md:px-12">
+            {/* 1. Active Threats */}
+            <section id="threats" className="w-full py-16 scroll-mt-24 md:py-24">
+              <div className="mx-auto w-full max-w-[90rem] px-6 md:px-12">
                 <EventsExplorer />
               </div>
             </section>
 
             <Divider />
 
-            {/* 2. Impact workspace (P3) */}
-            <section
-              id="impact"
-              className="relative w-full scroll-mt-24 bg-neutral-950 py-16 md:py-24"
-            >
+            {/* 2. Geospatial Impact Workspace */}
+            <section id="impact" className="relative w-full scroll-mt-24 py-16 md:py-24">
               <span
                 id="live-map"
                 aria-hidden="true"
                 className="absolute left-0 top-0 scroll-mt-24"
               />
-              <div className="mx-auto w-full max-w-360 px-6 md:px-12">
+              <div className="mx-auto w-full max-w-[90rem] px-6 md:px-12">
                 <ImpactWorkspace />
               </div>
             </section>
 
             <Divider />
 
-            {/* 3. AI Forecast & Briefing (P4) */}
+            {/* 3. AI Forecast & Executive Briefing */}
             <BriefingSection />
 
             <Divider />
 
-            {/* 4. Vulnerability Index (P5) */}
+            {/* 4. Infrastructure Risk & Vulnerability Index */}
             <InfrastructureSection />
 
             <Divider />
 
-            {/* 5. Processing Pipeline (P5) */}
+            {/* 5. Intelligence Pipeline */}
             <Pipeline />
           </WorkspaceProvider>
         </Suspense>
 
         <Divider />
 
-        {/* 6. Core Systems (P5) */}
+        {/* 6. Core Systems */}
         <CoreSystems />
 
         <Divider />
 
-        {/* 7. Audience Access (P5) */}
+        {/* 7. Audience Access */}
         <Access />
 
         <Divider />
 
-        {/* 8. Mission Control Footer (P5) */}
+        {/* 8. Footer */}
         <Footer />
       </main>
     </>

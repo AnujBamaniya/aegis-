@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DataSourceError } from "@/lib/dataSource";
-import {
-  ActivityIcon,
-  RefreshIcon,
-} from "@/components/icons";
+import { RefreshIcon } from "@/components/icons";
 import { EVENT_TYPE_LABEL } from "@/components/workspace/alertPresentation";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   EventCardLarge,
   EventCardSmall,
@@ -24,29 +22,29 @@ import type { EventType } from "@/lib/schema";
 function SkeletonCard({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`glass relative overflow-hidden rounded-3xl ${className}`}
+      className={`relative overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40 ${className}`}
     >
       <div aria-hidden="true" className="flex flex-col gap-4 p-8">
-        <div className="h-4 w-24 animate-pulse rounded bg-white/5" />
-        <div className="h-7 w-2/3 animate-pulse rounded bg-white/5" />
-        <div className="h-4 w-1/2 animate-pulse rounded bg-white/5" />
+        <div className="h-4 w-24 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
+        <div className="h-7 w-2/3 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
+        <div className="h-4 w-1/2 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
       </div>
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-white/5 to-transparent"
+        className="absolute inset-0 z-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-bone-vellum/5 to-transparent"
       />
     </div>
   );
 }
 
-/** Calm empty state (DESIGN 8.14): no red, no alarm. */
+/** Calm empty state (4-state contract): no red, no alarm, no card chrome. */
 function EmptyState({ filter }: { filter: ThreatFilter }) {
   return (
-    <div className="glass col-span-1 rounded-3xl px-8 py-20 text-center md:col-span-12">
-      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+    <div className="col-span-1 border border-iron-filings/70 bg-obsidian-loam/40 px-8 py-20 md:col-span-12">
+      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-drift-ash">
         Feed clear
       </p>
-      <p className="text-lg font-light text-white/50">
+      <p className="text-lg font-light text-drift-ash">
         {filter === "ALL"
           ? "No active events are reported in the current scan window."
           : `No ${EVENT_TYPE_LABEL[filter].toLowerCase()} events are reported in the current scan window.`}
@@ -55,7 +53,7 @@ function EmptyState({ filter }: { filter: ThreatFilter }) {
   );
 }
 
-/** Inline error with manual retry (8.14). */
+/** Inline error with manual retry (4-state contract). */
 function ErrorState({
   message,
   onRetry,
@@ -66,18 +64,18 @@ function ErrorState({
   return (
     <div
       role="alert"
-      className="col-span-1 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-red-500/20 bg-red-500/5 p-6 md:col-span-12"
+      className="col-span-1 flex flex-wrap items-center justify-between gap-4 border border-iron-filings/70 bg-obsidian-loam/40 p-6 md:col-span-12"
     >
       <div>
-        <p className="font-mono text-xs uppercase tracking-widest text-red-400">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-red-400">
           Threat feed unavailable
         </p>
-        <p className="mt-1 text-sm font-light text-white/50">{message}</p>
+        <p className="mt-1 text-sm font-light text-drift-ash">{message}</p>
       </div>
       <button
         type="button"
         onClick={onRetry}
-        className="flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+        className="flex items-center gap-2 rounded-[3.6px] border border-iron-filings px-5 py-2.5 font-mono text-xs uppercase tracking-[0.16em] text-bone-vellum transition-colors duration-200 hover:border-lime-surveyor hover:text-lime-surveyor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor"
       >
         <RefreshIcon className="h-4 w-4" />
         Retry
@@ -184,26 +182,12 @@ export function EventsExplorer() {
   return (
     <div>
       <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="relative min-w-0 lg:max-w-xl">
-          <span
-            aria-hidden="true"
-            className="absolute -left-4 top-1 bottom-1 w-1 bg-gradient-to-b from-emerald-500 to-transparent opacity-50 md:-left-8"
-          />
-          <p className="mb-4 flex items-center gap-3 text-emerald-400">
-            <ActivityIcon className="h-4 w-4" aria-hidden="true" />
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-emerald-400/80">
-              Hazard feed
-            </span>
-          </p>
-          <h2 className="font-bricolage text-4xl font-medium tracking-tight text-white md:text-5xl">
-            Active{" "}
-            <span className="font-light text-neutral-500">threats</span>
-          </h2>
-          <p className="mt-4 font-light leading-relaxed text-white/50">
-            Live GDACS events streaming through the platform. Select a threat
-            to make it the featured card, then open its impact workspace below.
-          </p>
-        </div>
+        <SectionHeader
+          index="01"
+          eyebrow="Hazard feed"
+          title="Active threats"
+          description="Live GDACS events streaming through the platform. Select a threat to make it the featured card, then open its impact workspace below."
+        />
         {events.isSuccess ? (
           <FilterTrack filter={filter} onFilter={handleFilter} counts={counts} />
         ) : null}
@@ -214,7 +198,7 @@ export function EventsExplorer() {
       <p
         role="status"
         aria-live="polite"
-        className="mb-6 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-400"
+        className="mb-6 font-mono text-[10px] uppercase tracking-[0.2em] text-drift-ash"
       >
         {events.isPending
           ? "Loading threat feed…"
@@ -229,10 +213,10 @@ export function EventsExplorer() {
       {isBriefingRunning && (
         <div
           role="status"
-          className="mb-6 flex items-center gap-3 rounded-2xl border border-purple-500/30 bg-purple-500/10 px-4 py-3 text-sm text-purple-300"
+          className="mb-6 flex items-center gap-3 border border-lime-surveyor/25 bg-lime-surveyor/5 px-4 py-3 text-sm text-bone-vellum"
         >
-          <span className="h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
-          <span className="font-mono text-xs">
+          <span className="h-2 w-2 rounded-full bg-lime-surveyor animate-pulse" />
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-drift-ash">
             Briefing in progress. The backend handles one request at a time.
           </span>
         </div>

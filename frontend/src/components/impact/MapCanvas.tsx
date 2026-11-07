@@ -137,13 +137,14 @@ function buildTooltipNode(props: AssetTooltipProps): HTMLElement {
   root.className = "space-y-1";
 
   const name = document.createElement("span");
-  name.className = "block max-w-[13rem] truncate text-xs font-medium text-white";
+  name.className =
+    "block max-w-[13rem] truncate text-xs font-medium text-bone-vellum";
   name.textContent = props.name;
   root.append(name);
 
   const line = document.createElement("span");
   line.className =
-    "block whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-white/70";
+    "block whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-drift-ash";
   line.textContent = `${assetTypeLabel(props.type)} · ${formatDistance(props.distance)}`;
   root.append(line);
 
@@ -412,7 +413,7 @@ export default function MapCanvas({
         }
         const dot = document.createElement("span");
         dot.className =
-          "absolute inset-0 z-10 rounded-full border-2 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]";
+          "absolute inset-0 z-10 rounded-full border-2 border-lime-surveyor";
         dot.style.backgroundColor = TIER_META[asset.riskTier]?.hex ?? "#ef4444";
         wrap.append(dot);
         const marker = new Marker({ element: wrap })
@@ -661,7 +662,7 @@ export default function MapCanvas({
   if (failed) {
     return (
       <div className="flex h-full w-full items-center justify-center px-6 text-center">
-        <p className="max-w-xs text-sm font-light text-white/50">
+        <p className="max-w-xs text-sm font-light text-drift-ash">
           Map unavailable on this device. Tiers and the asset list keep working
           alongside.
         </p>

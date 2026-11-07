@@ -63,14 +63,14 @@ export function ForecastFanChart({
   // 2. Idle state: not requested yet
   if (status === "idle") {
     return (
-      <div className="glass flex h-full min-h-[340px] flex-col items-center justify-center rounded-3xl p-8 text-center">
-        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-purple-400/80">
+      <div className="flex h-full min-h-[340px] flex-col items-center justify-center border border-iron-filings/70 bg-obsidian-loam/40 p-8 text-center">
+        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-drift-ash">
           AI severity forecast
         </span>
-        <h3 className="mb-2 font-bricolage text-lg font-medium text-white">
+        <h3 className="mb-2 font-sans text-lg font-medium text-bone-vellum">
           Hydro-meteorological severity index
         </h3>
-        <p className="max-w-md text-sm font-light text-white/50">
+        <p className="max-w-md text-sm font-light text-drift-ash">
           Run a briefing to see the forecast.
         </p>
       </div>
@@ -82,15 +82,15 @@ export function ForecastFanChart({
     return (
       <div
         role="alert"
-        className="glass flex h-full min-h-[340px] flex-col items-center justify-center rounded-3xl border-red-500/20 bg-red-500/5 p-8 text-center"
+        className="flex h-full min-h-[340px] flex-col items-center justify-center border border-iron-filings/70 bg-obsidian-loam/40 p-8 text-center"
       >
         <span className="mb-2 font-mono text-xs uppercase tracking-widest text-red-400">
           Forecast unavailable
         </span>
-        <h3 className="mb-2 font-bricolage text-lg font-medium text-white">
+        <h3 className="mb-2 font-sans text-lg font-medium text-bone-vellum">
           Hydro-meteorological severity index
         </h3>
-        <p className="max-w-md text-sm font-light text-white/50">
+        <p className="max-w-md text-sm font-light text-drift-ash">
           {error || "Forecast unavailable due to service error"}
         </p>
       </div>
@@ -105,14 +105,14 @@ export function ForecastFanChart({
     !forecast.p90?.length
   ) {
     return (
-      <div className="glass flex h-full min-h-[340px] flex-col items-center justify-center rounded-3xl p-8 text-center">
-        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
+      <div className="flex h-full min-h-[340px] flex-col items-center justify-center border border-iron-filings/70 bg-obsidian-loam/40 p-8 text-center">
+        <span className="mb-2 font-mono text-xs uppercase tracking-widest text-drift-ash">
           Forecast
         </span>
-        <h3 className="mb-2 font-bricolage text-lg font-medium text-white">
+        <h3 className="mb-2 font-sans text-lg font-medium text-bone-vellum">
           Hydro-meteorological severity index
         </h3>
-        <p className="max-w-md text-sm font-light text-white/50">
+        <p className="max-w-md text-sm font-light text-drift-ash">
           Forecast unavailable for this location
         </p>
       </div>
@@ -162,21 +162,21 @@ export function ForecastFanChart({
   const shouldAnimate = !(reducedMotion || lite);
 
   return (
-    <div className="glass flex h-full flex-col justify-between rounded-3xl p-6 md:p-8">
+    <div className="flex h-full flex-col justify-between border border-iron-filings/70 bg-obsidian-loam/40 p-6 md:p-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
-          <h3 className="font-bricolage text-lg font-medium tracking-tight text-white">
+          <span className="h-1.5 w-1.5 rounded-full bg-lime-surveyor" />
+          <h3 className="font-sans text-lg font-medium tracking-tight text-bone-vellum">
             Hydro-meteorological severity index
           </h3>
         </div>
-        <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-wider text-white/50">
+        <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-wider text-drift-ash">
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3 bg-purple-400" />
+            <span className="h-0.5 w-3 bg-lime-surveyor" />
             p50 median
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-3 rounded-xs bg-purple-500/20 border border-purple-500/40" />
+            <span className="h-2 w-3 rounded-[3.6px] bg-lime-surveyor/15 border border-lime-surveyor/40" />
             p10–p90 band
           </span>
         </div>
@@ -191,8 +191,8 @@ export function ForecastFanChart({
       >
         <defs>
           <linearGradient id="fanGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.08" />
+            <stop offset="0%" stopColor="#ebfc72" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#ebfc72" stopOpacity="0.04" />
           </linearGradient>
         </defs>
 
@@ -208,14 +208,14 @@ export function ForecastFanChart({
                 y1={yVal}
                 x2={padding.left + chartW}
                 y2={yVal}
-                stroke="rgba(255,255,255,0.08)"
+                stroke="rgba(244,243,232,0.08)"
                 strokeWidth={1}
               />
               <text
                 x={padding.left - 8}
                 y={yVal + 3}
                 textAnchor="end"
-                className="font-mono text-[9px] fill-white/30"
+                className="font-mono text-[9px] fill-drift-ash/70"
               >
                 {labelVal.toFixed(0)}
               </text>
@@ -233,7 +233,7 @@ export function ForecastFanChart({
               y1={padding.top}
               x2={x}
               y2={padding.top + chartH}
-              stroke="rgba(255,255,255,0.06)"
+              stroke="rgba(244,243,232,0.08)"
               strokeWidth={1}
             />
           );
@@ -246,7 +246,7 @@ export function ForecastFanChart({
         <polyline
           points={pointsP90.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")}
           fill="none"
-          stroke="#c084fc"
+          stroke="#84837b"
           strokeWidth="1"
           strokeOpacity="0.4"
           strokeDasharray="4 3"
@@ -256,17 +256,17 @@ export function ForecastFanChart({
         <polyline
           points={pointsP10.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")}
           fill="none"
-          stroke="#c084fc"
+          stroke="#84837b"
           strokeWidth="1"
           strokeOpacity="0.4"
           strokeDasharray="4 3"
         />
 
-        {/* p50 line (purple-400, 2px) with draw-in animation */}
+        {/* p50 line (lime surveyor, 2px) with draw-in animation */}
         <path
           d={`M ${lineP50}`}
           fill="none"
-          stroke="#c084fc"
+          stroke="#ebfc72"
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -290,8 +290,8 @@ export function ForecastFanChart({
             cx={p.x}
             cy={p.y}
             r={i === 0 || i === pointsP50.length - 1 ? 3.5 : 2}
-            fill="#a855f7"
-            stroke="#0a0a0a"
+            fill="#ebfc72"
+            stroke="#13140e"
             strokeWidth={1}
           />
         ))}
@@ -303,7 +303,7 @@ export function ForecastFanChart({
             x={scaleX(i)}
             y={padding.top + chartH + 20}
             textAnchor="middle"
-            className="font-mono text-[10px] uppercase tracking-wider fill-white/40"
+            className="font-mono text-[10px] uppercase tracking-wider fill-drift-ash"
           >
             {label}
           </text>
@@ -337,16 +337,16 @@ export function ForecastFanChart({
 
 function ForecastSkeleton() {
   return (
-    <div className="glass flex h-full flex-col justify-between rounded-3xl p-6 md:p-8">
+    <div className="flex h-full flex-col justify-between border border-iron-filings/70 bg-obsidian-loam/40 p-6 md:p-8">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-          <div className="h-5 w-56 animate-pulse rounded bg-white/5" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime-surveyor" />
+          <div className="h-5 w-56 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
         </div>
-        <div className="h-4 w-32 animate-pulse rounded bg-white/5" />
+        <div className="h-4 w-32 animate-pulse rounded-[3.6px] bg-bone-vellum/5" />
       </div>
-      <div className="flex h-[240px] w-full items-center justify-center overflow-hidden rounded-xl bg-white/[0.02]">
-        <div className="h-full w-full animate-pulse bg-gradient-to-r from-transparent via-purple-500/5 to-transparent" />
+      <div className="relative flex h-[240px] w-full items-center justify-center overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40">
+        <div className="h-full w-full animate-shimmer-effect bg-gradient-to-r from-transparent via-bone-vellum/5 to-transparent" />
       </div>
     </div>
   );

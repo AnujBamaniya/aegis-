@@ -60,13 +60,14 @@ const MapCanvas = dynamic(() => import("@/components/impact/MapCanvas"), {
 function MapModuleSkeleton() {
   return (
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+      <div className="absolute inset-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-bone-vellum/5 to-transparent" />
     </div>
   );
 }
 
+/** Overlay chips: flat mono instrument labels above the map. */
 const CHIP =
-  "pointer-events-none flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-white/70 backdrop-blur";
+  "pointer-events-none flex items-center gap-2 rounded-[3.6px] border border-iron-filings bg-obsidian-loam/70 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-drift-ash";
 
 export function ImpactMapPanel({
   event,
@@ -91,7 +92,7 @@ export function ImpactMapPanel({
   const footprintPublished = footprint !== null;
 
   return (
-    <div className="glass relative h-[420px] w-full overflow-hidden rounded-3xl lg:h-[560px]">
+    <div className="relative h-[420px] w-full overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40 lg:h-[560px]">
       <MapCanvas
         event={event}
         footprint={footprint}
@@ -101,9 +102,10 @@ export function ImpactMapPanel({
         lite={lite}
         reducedMotion={reducedMotion}
       />
+      {/* Functional legibility scrim over the base map, not decoration. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-neutral-950/70 via-transparent to-neutral-950/20"
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-obsidian-loam/70 via-transparent to-obsidian-loam/20"
       />
 
       {/* Overlay chips: footprint status (top-left), Demo/Live (bottom-left). */}
@@ -112,7 +114,7 @@ export function ImpactMapPanel({
           <span
             aria-hidden="true"
             className={`h-1.5 w-1.5 rounded-full ${
-              footprintPublished ? "bg-emerald-500" : "bg-white/30"
+              footprintPublished ? "bg-lime-surveyor" : "bg-bone-vellum/30"
             }`}
           />
           {footprintPublished
@@ -127,9 +129,9 @@ export function ImpactMapPanel({
       {dataLoading ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[5] overflow-hidden bg-neutral-950/40"
+          className="pointer-events-none absolute inset-0 z-[5] overflow-hidden bg-obsidian-loam/40"
         >
-          <div className="absolute inset-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+          <div className="absolute inset-0 -translate-x-full animate-shimmer-effect bg-gradient-to-r from-transparent via-bone-vellum/5 to-transparent" />
         </div>
       ) : null}
     </div>

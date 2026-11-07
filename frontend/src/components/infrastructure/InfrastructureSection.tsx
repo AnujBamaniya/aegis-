@@ -6,12 +6,18 @@ import { useEventsFeed } from "@/hooks/useEventsFeed";
 import { useInfrastructureQuery } from "@/hooks/useImpactQueries";
 import { VulnerabilityIndex, VulnerabilityIndexSkeleton } from "@/components/vulnerability/VulnerabilityIndex";
 import { DataModeBadge } from "@/components/ui/DataModeBadge";
-import { MapPinIcon } from "@/components/icons";
+import { TypeChips } from "@/components/workspace/EventCards";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { RegionError, CalmNote, errorMessageOf } from "@/components/ui/RegionStates";
 
-const SECTION_LABEL =
-  "mb-3 font-mono text-[10px] uppercase tracking-widest text-white/70";
-
+/**
+ * Infrastructure risk (Inversa revamp). One SectionHeader recipe, the
+ * selected event as a chrome-free text block on the canvas (its classification
+ * carried by the hairline TypeChips), then the vulnerability index as flat
+ * hairline rows. Data flow, the four data states and the role="status"
+ * selection line are untouched. Reveal motion is applied globally by
+ * components/motion/SectionMotion.tsx via the data-gsap attributes.
+ */
 export function InfrastructureSection() {
   const events = useEventsFeed();
   const workspace = useWorkspace();
@@ -35,36 +41,23 @@ export function InfrastructureSection() {
   return (
     <section
       id="infrastructure"
-      className="relative w-full scroll-mt-24 bg-neutral-950 py-16 md:py-24"
+      className="relative w-full scroll-mt-24 py-16 md:py-24"
     >
       <div className="mx-auto w-full max-w-360 px-6 md:px-12">
-        {/* Section header (DESIGN 8.4) */}
-        <div className="relative min-w-0 lg:max-w-xl animate-on-scroll">
-          <span
-            aria-hidden="true"
-            className="absolute -left-4 top-1 bottom-1 w-1 bg-gradient-to-b from-emerald-500 to-transparent opacity-50 md:-left-8"
-          />
-          <p className="mb-4 flex items-center gap-3 text-emerald-400">
-            <MapPinIcon className="h-4 w-4" aria-hidden="true" />
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-emerald-400/80">
-              Vulnerability index
-            </span>
-          </p>
-          <h2 className="font-bricolage text-4xl md:text-5xl font-medium tracking-tight text-white">
-            Vulnerability{" "}
-            <span className="font-light text-neutral-500">index</span>
-          </h2>
-          <p className="mt-4 font-light leading-relaxed text-white/50">
-            Critical infrastructure grouped by asset class, tiered by distance
-            to the selected hazard footprint.
-          </p>
-        </div>
+        {/* Section header (Inversa revamp) */}
+        <SectionHeader
+          index="04"
+          eyebrow="Infrastructure risk"
+          title="Vulnerability index"
+          description="Critical infrastructure grouped by asset class, tiered by distance to the selected hazard footprint."
+          className="mb-12"
+        />
 
-        <div className="mt-10">
+        <div>
           <p
             role="status"
             aria-live="polite"
-            className={SECTION_LABEL}
+            className="mb-6 font-mono text-[10px] uppercase tracking-[0.2em] text-drift-ash"
           >
             {events.isPending
               ? "Loading threat feed…"
@@ -75,12 +68,17 @@ export function InfrastructureSection() {
 
           {selected ? (
             <>
-              {/* Selected event summary */}
-              <div className="glass rounded-3xl p-6 mb-8">
-                <h3 className="font-bricolage text-2xl font-medium tracking-tight text-white">
+              {/* Selected event summary — no card chrome; content sits
+                  directly on the canvas and the event is classified by the
+                  shared hairline TypeChips. */}
+              <div data-gsap="reveal" className="mb-10">
+                <div className="mb-5">
+                  <TypeChips event={selected} />
+                </div>
+                <h3 className="text-2xl font-light leading-[1.05] tracking-[-0.03em] text-bone-vellum md:text-3xl">
                   {selected.name}
                 </h3>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-white/60">
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-drift-ash">
                   {selected.country ? `${selected.country} · ` : ""}
                   Episode {selected.episodeId}
                 </p>
@@ -88,7 +86,9 @@ export function InfrastructureSection() {
 
               {/* Vulnerability index */}
               <div>
-                <p className={SECTION_LABEL}>Asset classes</p>
+                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-drift-ash">
+                  Asset classes
+                </p>
                 {infrastructure.isPending ? (
                   <VulnerabilityIndexSkeleton />
                 ) : infrastructure.isError ? (
@@ -115,7 +115,9 @@ export function InfrastructureSection() {
             <CalmNote>Select a threat above to see its vulnerability index.</CalmNote>
           )}
 
-          <DataModeBadge />
+          <div className="mt-10">
+            <DataModeBadge />
+          </div>
         </div>
       </div>
     </section>

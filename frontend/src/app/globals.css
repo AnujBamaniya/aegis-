@@ -1,13 +1,74 @@
 @import "tailwindcss";
 
+/* AEGIS MATRIX design-system foundation (Step 2, docs/DESIGN.md is the
+   source of truth). Font pairing approved: Inter + JetBrains Mono. */
+
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-bricolage: var(--font-bricolage), ui-sans-serif, sans-serif;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Primary voices. Inter = display + body. JetBrains Mono = technical
+     labels, metadata, numerical information. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular,
+    Menlo, Monaco, Consolas, monospace;
 }
 
 @theme {
+  /* Colors — docs/DESIGN.md "Tokens — Colors". */
+  --color-obsidian-loam: #13140e;
+  --color-bone-vellum: #f4f3e8;
+  --color-iron-filings: #404040;
+  --color-drift-ash: #84837b;
+  --color-lime-surveyor: #ebfc72;
+  --color-marsh-olive: #bacd31;
+
+  /* Typography — type scale (docs/DESIGN.md "Type Scale"). Each size
+     composes its line-height and letter-spacing, so one utility covers the
+     role: text-caption / text-body / text-subheading / text-heading /
+     text-display. */
+  --text-caption: 13px;
+  --text-caption--line-height: 1.2;
+  --text-caption--letter-spacing: 0px;
+  --text-body: 18px;
+  --text-body--line-height: 1.62;
+  --text-body--letter-spacing: -0.54px;
+  --text-subheading: 29px;
+  --text-subheading--line-height: 1.28;
+  --text-subheading--letter-spacing: 0px;
+  --text-heading: 58px;
+  --text-heading--line-height: 1.06;
+  --text-heading--letter-spacing: -1.74px;
+  --text-display: 72px;
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -2.16px;
+
+  /* Standalone leading / tracking names (docs/DESIGN.md Quick Start) for
+     composing against other sizes. */
+  --leading-caption: 1.2;
+  --leading-body: 1.62;
+  --leading-subheading: 1.28;
+  --leading-heading: 1.06;
+  --leading-display: 0.9;
+  --tracking-body: -0.54px;
+  --tracking-heading: -1.74px;
+  --tracking-display: -2.16px;
+
+  /* Weights in active use by the scale. */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+
+  /* Border radius — near-zero "instrument panel" corners. --radius-md is
+     overridden to the 3.6px value from DESIGN's Tailwind Quick Start. */
+  --radius-md: 3.6px;
+  --radius-tag: 3.6px;
+  --radius-button: 3.6px;
+  --radius-input: 3.6px;
+  --radius-card: 0px;
+
+  /* Layout */
+  --page-max-width: 1200px;
+
+  /* Motion tokens preserved from the previous phase. */
   --animate-cinematic: cinematicEntrance 3.5s cubic-bezier(.22, 1, .36, 1) forwards;
   --animate-slide-up: slideUpFade 1s ease-out forwards;
   --animate-ticker: ticker 20s linear infinite;
@@ -61,19 +122,49 @@
   }
 }
 
+/* Fields and layout: NOT in the Tailwind theme on purpose. Tailwind v4's
+   spacing utilities are dynamic (p-5 = calc(var(--spacing) * 5)) and
+   existing components rely on that scale (p-5, mt-5, p-14, ...). Registering
+   --spacing-5: 5px would silently reshape every existing section. These
+   tokens are exposed as plain custom properties for direct consumption
+   (padding-top: var(--spacing-86)) until the per-section phases adopt them. */
+:root {
+  /* Spacing scale — docs/DESIGN.md "Tokens — Spacing & Shapes". */
+  --spacing-5: 5px;
+  --spacing-7: 7px;
+  --spacing-14: 14px;
+  --spacing-18: 18px;
+  --spacing-21: 21px;
+  --spacing-29: 29px;
+  --spacing-59: 59px;
+  --spacing-86: 86px;
+  --spacing-104: 104px;
+  --spacing-119: 119px;
+
+  /* Layout rhythm (ranges tokenized with min/max). --page-max-width is
+     registered in the Tailwind @theme block above. */
+  --element-gap: 18px;
+  --section-gap-min: 86px;
+  --section-gap-max: 104px;
+  --card-padding-min: 14px;
+  --card-padding-max: 18px;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Glass card recipe (P2): every card/panel/pill. Utilities still win over
-   this layer, so variant overrides stay possible. Lite mode drops the blur. */
+/* Flat panel recipe (Inversa revamp): every card/panel is a hairline-bordered
+   surface on the canvas — no glassmorphism, no shadow. The class name is kept
+   because ~10 pre-revamp files still use it; their inline rounded/shadow
+   classes are removed during the per-section redesign. */
+
 @layer components {
   .glass {
-    @apply border border-white/10 bg-neutral-950/60 backdrop-blur-2xl;
+    @apply border border-iron-filings/70 bg-obsidian-loam/40;
   }
   [data-perf="lite"] .glass {
-    @apply bg-neutral-950/90;
-    backdrop-filter: none;
+    background-color: #13140e;
   }
 }
 
@@ -82,29 +173,6 @@ html {
   scrollbar-width: none;
 }
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Featured-card HUD scan lines (P2, featured card only). */
-.hud-scanlines {
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.12) 0px,
-    rgba(255, 255, 255, 0.12) 1px,
-    transparent 1px,
-    transparent 14px
-  );
-  animation: hudScan 4s linear infinite;
-}
-@keyframes hudScan {
-  from {
-    background-position-x: 0;
-  }
-  to {
-    background-position-x: 28px;
-  }
-}
-[data-perf="lite"] .hud-scanlines {
   display: none;
 }
 
@@ -143,7 +211,7 @@ html {
 }
 
 body {
-  @apply bg-neutral-950 text-neutral-50 w-full overflow-x-hidden relative;
+  @apply bg-obsidian-loam text-bone-vellum w-full overflow-x-hidden relative;
 }
 
 .bg-grain {
@@ -159,28 +227,6 @@ body {
   text-shadow: 0 0 20px rgba(255, 255, 255, .4);
 }
 
-/* Scroll reveal (DESIGN 7.3). Shared observer is mounted once in layout. */
-.animate-on-scroll {
-  opacity: 0;
-  animation: animationIn 1s cubic-bezier(.2, .8, .2, 1) forwards;
-  animation-play-state: paused;
-}
-.animate-on-scroll.animate {
-  animation-play-state: running;
-}
-.animate-on-scroll[data-anim="slide-left"] {
-  animation-name: slideInLeft;
-}
-.animate-on-scroll[data-anim="slide-right"] {
-  animation-name: slideInRight;
-}
-
-.anim-delay-100 { animation-delay: 100ms; }
-.anim-delay-200 { animation-delay: 200ms; }
-.anim-delay-300 { animation-delay: 300ms; }
-.anim-delay-400 { animation-delay: 400ms; }
-.anim-delay-500 { animation-delay: 500ms; }
-
 /* Equalizer bars (DESIGN 7.1): per-bar duration/delay set inline. */
 .bar-anim {
   transform-origin: bottom;
@@ -189,19 +235,7 @@ body {
   animation-iteration-count: infinite;
 }
 
-/* 3D card utilities for Core Systems (Tailwind v4) */
-@utility perspective-midrange {
-  perspective: 800px;
-}
-@utility transform-3d {
-  transform-style: preserve-3d;
-}
-@utility rotate-x-12 {
-  transform: rotateX(12deg);
-}
-@utility rotate-y-12 {
-  transform: rotateY(12deg);
-}
+/* Risk-tier chips + equalizer bars + card-swap entrance are load-bearing. */
 
 /* Risk tier chips (DESIGN 3.3). Never convey severity by color alone:
    always pair these classes with a visible text label. */
@@ -210,28 +244,13 @@ body {
 .tier-elevated { @apply border border-blue-500/30 bg-blue-500/20 text-blue-400; }
 .tier-monitoring { @apply border border-emerald-500/30 bg-emerald-500/20 text-emerald-400; }
 
-/* Lite mode performance gates (set on <html data-perf="lite"> by PerfInit).
-   Components attach .fx-glow to ambient blurred blobs. */
+/* Lite mode performance gates (set on <html data-perf="lite"> by PerfInit). */
 [data-perf="lite"] .bg-grain {
   display: none;
-}
-[data-perf="lite"] .fx-glow {
-  display: none;
-}
-
-/* Core-system card motion gate (P5): .fx-anim marks decorative loops
-   (spin / pulse) that stop in lite mode and under reduced motion. */
-[data-perf="lite"] .fx-anim {
-  animation: none !important;
 }
 /* Equalizer bars render static in lite mode (reduced motion already handled). */
 [data-perf="lite"] .bar-anim {
   animation: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-anim {
-    animation: none !important;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -248,18 +267,12 @@ body {
   .animate-ticker,
   .animate-spin-slow-reverse,
   .bar-anim,
-  .animate-pulse,
-  .hud-scanlines {
+  .animate-pulse {
     animation: none;
   }
   /* Filter-swap entrances appear instantly (no stagger). */
   .card-swap-in {
     animation: none;
-  }
-  /* Scroll-reveal content must never be invisible. */
-  .animate-on-scroll {
-    opacity: 1 !important;
-    animation: none !important;
   }
   html {
     scroll-behavior: auto;
@@ -267,13 +280,14 @@ body {
 }
 
 /* Map panel (P3, DESIGN 10): controls restyled to the dark language,
-   no default light MapLibre UI. */
+   no default light MapLibre UI. Colors + radius use the Step 2 design
+   tokens: obsidian-loam surface, iron-filings hairlines, 3.6px corners,
+   no shadow (flat instrument-panel chrome). */
 .maplibregl-ctrl.maplibregl-ctrl-group {
-  background: rgba(23, 23, 23, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: rgba(19, 20, 14, 0.85);
+  border: 1px solid #404040;
+  border-radius: 3.6px;
   box-shadow: none;
-  backdrop-filter: blur(8px);
   overflow: hidden;
 }
 .maplibregl-ctrl-group button {
@@ -282,42 +296,41 @@ body {
   height: 32px;
 }
 .maplibregl-ctrl-group button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(235, 252, 114, 0.08);
 }
 .maplibregl-ctrl-group button + button {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #404040;
 }
 .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
   filter: invert(1);
 }
 .maplibregl-ctrl-attrib.maplibregl-compact {
-  background: rgba(23, 23, 23, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.6);
+  background: rgba(19, 20, 14, 0.85);
+  border: 1px solid #404040;
+  border-radius: 3.6px;
+  color: #84837b;
   font-size: 10px;
-  backdrop-filter: blur(8px);
 }
 .maplibregl-ctrl-attrib a,
 .maplibregl-ctrl-attrib-button {
-  color: rgba(255, 255, 255, 0.6);
+  color: #84837b;
 }
 
 /* Asset tooltip (P3, hotspot style DESIGN 8.7): built in MapCanvas with
    createElement/textContent (no innerHTML) and shown as a MapLibre popup
-   with this custom class: transparent content, no tip arrow. */
+   with this custom class: obsidian-loam surface, bone-vellum text,
+   iron-filings hairline, 3.6px radius, no tip arrow, no shadow. */
 .aegis-tooltip {
   z-index: 20;
 }
 .aegis-tooltip .maplibregl-popup-content {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: rgba(19, 20, 14, 0.92);
+  border: 1px solid #404040;
+  border-radius: 3.6px;
   box-shadow: none;
   padding: 0.5rem 0.75rem;
-  font-family: inherit;
-  color: #fff;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  color: #f4f3e8;
   min-width: 11rem;
 }
 .aegis-tooltip .maplibregl-popup-tip {
@@ -327,4 +340,59 @@ body {
 [data-perf="lite"] .maplibregl-ctrl-group,
 [data-perf="lite"] .maplibregl-ctrl-attrib {
   backdrop-filter: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   Hero star field + globe (nav + hero revamp).
+   Static layered radial-gradient stars BEHIND the transparent WebGL globe
+   canvas: two repeat tiles tuned to the obsidian-loam canvas. No
+   animation loops, no particles — cheap repaint, no reduced-motion term.
+   ──────────────────────────────────────────────────────────────────────── */
+.hero-stars {
+  background-repeat: repeat;
+  background-size: 640px 640px;
+  background-image:
+    radial-gradient(1px 1px at 27px 41px, rgba(244, 243, 232, 0.85), transparent),
+    radial-gradient(1px 1px at 137px 271px, rgba(244, 243, 232, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 301px 146px, rgba(244, 243, 232, 0.9), transparent),
+    radial-gradient(1px 1px at 449px 405px, rgba(244, 243, 232, 0.55), transparent),
+    radial-gradient(1px 1px at 555px 88px, rgba(244, 243, 232, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 608px 305px, rgba(235, 252, 114, 0.28), transparent),
+    radial-gradient(1px 1px at 92px 508px, rgba(244, 243, 232, 0.4), transparent),
+    radial-gradient(1px 1px at 385px 585px, rgba(244, 243, 232, 0.6), transparent),
+    radial-gradient(1px 1px at 214px 599px, rgba(244, 243, 232, 0.35), transparent);
+}
+.hero-stars-dim {
+  background-repeat: repeat;
+  background-size: 380px 380px;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(1px 1px at 53px 147px, rgba(244, 243, 232, 0.5), transparent),
+    radial-gradient(1px 1px at 211px 59px, rgba(244, 243, 232, 0.35), transparent),
+    radial-gradient(1px 1px at 329px 231px, rgba(244, 243, 232, 0.45), transparent),
+    radial-gradient(1px 1px at 97px 305px, rgba(244, 243, 232, 0.3), transparent),
+    radial-gradient(1px 1px at 263px 349px, rgba(244, 243, 232, 0.4), transparent);
+}
+
+/* GSAP-driven hero elements start hidden by utility classes. Under reduced
+   motion no GSAP timeline runs, so force them to their final frame. */
+@media (prefers-reduced-motion: reduce) {
+  [data-hero-anim] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Hero globe: keep the tiny attribution flat and mono on the bottom-left
+   edge (compact attribution control, mounted bottom-left). */
+[data-hero-globe] .maplibregl-ctrl-attrib.maplibregl-compact {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 9px;
+  color: #84837b;
+}
+[data-hero-globe] .maplibregl-ctrl-attrib a {
+  color: #84837b;
 }

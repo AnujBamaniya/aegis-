@@ -8,6 +8,8 @@ import {
   type ForecastStatus,
 } from "./ForecastFanChart";
 import { DataModeBadge } from "@/components/ui/DataModeBadge";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { TypeChips } from "@/components/workspace/EventCards";
 import {
   useWorkspace,
   useWorkspaceSelectedId,
@@ -24,11 +26,7 @@ import {
   invalidateCache,
   clearError,
 } from "@/lib/briefingModule";
-import {
-  formatCoords,
-  EVENT_TYPE_LABEL,
-  alertPresentation,
-} from "@/components/workspace/alertPresentation";
+import { formatCoords } from "@/components/workspace/alertPresentation";
 import { TIER_META } from "@/components/impact/tierPresentation";
 
 interface BriefingButtonProps {
@@ -52,11 +50,11 @@ function BriefingActionButton({
       disabled={disabled || running || !event}
       onClick={onGenerate}
       aria-pressed={running}
-      className="inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-purple-500 px-7 py-3 text-sm font-medium text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-300 hover:bg-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400 disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[3.6px] bg-lime-surveyor px-7 py-3 font-mono text-[13px] uppercase tracking-[0.16em] text-obsidian-loam transition-colors hover:bg-marsh-olive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor disabled:cursor-not-allowed disabled:opacity-40"
     >
       {running ? (
         <>
-          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-obsidian-loam/30 border-t-obsidian-loam" />
           <span>Generating briefing…</span>
         </>
       ) : done ? (
@@ -81,39 +79,28 @@ function ThreatStrip({
 }) {
   if (!event) {
     return (
-      <div className="glass rounded-3xl p-8 text-center">
-        <p className="font-light text-white/50">
+      <div className="border border-iron-filings/70 bg-obsidian-loam/40 p-8 text-center">
+        <p className="font-light text-drift-ash">
           Select a threat to generate a briefing.
         </p>
       </div>
     );
   }
 
-  const alert = alertPresentation(event.alertLevel);
-
   return (
-    <div className="glass rounded-3xl p-6 md:p-8">
+    <div className="border border-iron-filings/70 bg-obsidian-loam/40 p-6 md:p-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
-          <div className="mb-2 flex flex-wrap items-center gap-2.5">
-            {/* Threat Type */}
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-white/70 backdrop-blur">
-              {EVENT_TYPE_LABEL[event.type]}
-            </span>
-            {/* GDACS Chip */}
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-widest backdrop-blur ${alert.chip}`}
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${alert.dot}`} />
-              {alert.label}
-            </span>
+          <div className="mb-3 flex flex-wrap items-center gap-2.5">
+            {/* Flat data tags (Inversa revamp) reused from the event cards. */}
+            <TypeChips event={event} />
           </div>
 
-          <h3 className="truncate font-bricolage text-2xl font-medium tracking-tight text-white md:text-3xl">
+          <h3 className="truncate font-sans text-2xl font-medium tracking-tight text-bone-vellum md:text-3xl">
             {event.name}
           </h3>
 
-          <p className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
+          <p className="mt-2 font-mono text-xs uppercase tracking-widest text-drift-ash">
             {formatCoords(event)} · Episode {event.episodeId}
           </p>
         </div>
@@ -130,7 +117,7 @@ function ThreatStrip({
       </div>
 
       {running && (
-        <p className="mt-4 font-mono text-xs text-amber-400/80">
+        <p className="mt-4 font-mono text-xs text-drift-ash">
           Briefing in progress. The backend handles one request at a time.
         </p>
       )}
@@ -148,7 +135,7 @@ function BriefingStatsChips({
 
   return (
     <div className="mt-5 flex flex-wrap items-center gap-2">
-      <span className="mr-1 font-mono text-[10px] uppercase tracking-wider text-neutral-400">
+      <span className="mr-1 font-mono text-[10px] uppercase tracking-wider text-drift-ash">
         Response assets:
       </span>
       {entries.map(([tier, count]) => {
@@ -157,7 +144,7 @@ function BriefingStatsChips({
         return (
           <span
             key={tier}
-            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${meta.chip}`}
+            className={`inline-flex items-center gap-1.5 rounded-[3.6px] border border-iron-filings/70 bg-obsidian-loam/40 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${meta.chip}`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${meta.dot.split(" ").pop()}`} />
             <span>{tier.replace("_", " ")}: {count}</span>
@@ -281,30 +268,18 @@ export function BriefingSection() {
   return (
     <section
       id="briefing"
-      className="w-full scroll-mt-24 bg-neutral-950 py-16 md:py-24"
+      className="w-full scroll-mt-24 py-16 md:py-24"
     >
       <div className="mx-auto w-full max-w-360 px-6 md:px-12">
-        {/* Section Header: same eyebrow + h2 style as #impact */}
-        <div className="relative min-w-0 lg:max-w-xl">
-          <span
-            aria-hidden="true"
-            className="absolute -left-4 top-1 bottom-1 w-1 bg-gradient-to-b from-purple-500 to-transparent opacity-50 md:-left-8"
-          />
-          <p className="mb-4 flex items-center gap-3 text-purple-400">
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-purple-400/80">
-              AI forecast &amp; briefing
-            </span>
-            <span className="h-[1px] w-8 bg-purple-500/30" />
-          </p>
-          <h2 className="font-bricolage text-4xl font-medium tracking-tight text-white md:text-5xl">
-            Forecast{" "}
-            <span className="font-light text-neutral-500">&amp; briefing</span>
-          </h2>
-          <p className="mt-4 font-light leading-relaxed text-white/50">
-            AI-driven severity forecast fan chart cross-referenced with critical
-            infrastructure and an executive tactical summary.
-          </p>
-        </div>
+        {/* Section header: shared editorial recipe (SectionHeader accents the
+            last title word in drift-ash). */}
+        <SectionHeader
+          index="03"
+          eyebrow="AI intelligence"
+          title="Forecast & briefing"
+          description="Severity forecast over the next seven steps for the selected threat, generated by a small local model and cached per event."
+          className="mb-12"
+        />
 
         {/* TOP: Selected event strip */}
         <div className="mt-10">
@@ -330,18 +305,18 @@ export function BriefingSection() {
           {/* RIGHT (lg:col-span-5): Briefing panel */}
           <div className="flex flex-col lg:col-span-5">
             {!selectedEvent ? (
-              <div className="glass flex h-full min-h-[340px] flex-col items-center justify-center rounded-3xl p-8 text-center">
-                <p className="font-light text-white/50">
+              <div className="flex h-full min-h-[340px] flex-col items-center justify-center border border-iron-filings/70 bg-obsidian-loam/40 p-8 text-center">
+                <p className="font-light text-drift-ash">
                   Select a threat to generate a briefing.
                 </p>
               </div>
             ) : (
-              <div className="glass flex h-full min-h-[340px] flex-col justify-between rounded-3xl p-6 md:p-8">
+              <div className="flex h-full min-h-[340px] flex-col justify-between border border-iron-filings/70 bg-obsidian-loam/40 p-6 md:p-8">
                 <div>
-                  {/* AI briefing purple badge + DataMode badge */}
+                  {/* AI briefing data tag + DataMode badge */}
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-purple-400">
-                      <span className="h-1.5 w-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                    <span className="inline-flex items-center gap-2 rounded-[3.6px] border border-lime-surveyor/30 bg-lime-surveyor/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-lime-surveyor">
+                      <span className="h-1.5 w-1.5 rounded-full bg-lime-surveyor" />
                       AI briefing
                     </span>
                     <DataModeBadge />
@@ -351,7 +326,7 @@ export function BriefingSection() {
                   {/* 1. Idle state */}
                   {!running && !moduleError && !briefingData && (
                     <div className="py-8 text-center">
-                      <p className="font-light text-white/50">
+                      <p className="font-light text-drift-ash">
                         Run a briefing to see the forecast and executive summary.
                       </p>
                     </div>
@@ -361,19 +336,19 @@ export function BriefingSection() {
                   {running && (
                     <div className="py-6">
                       <div className="flex items-center gap-3">
-                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
-                        <p className="font-medium text-white">
+                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-lime-surveyor border-t-transparent" />
+                        <p className="font-medium text-bone-vellum">
                           Generating executive briefing…
                         </p>
                       </div>
-                      <p className="mt-3 font-mono text-xs text-white/50">
+                      <p className="mt-3 font-mono text-xs text-drift-ash">
                         Elapsed: {elapsed}s · Local model, can take 90+ seconds
                       </p>
                       <div className="mt-6">
                         <button
                           type="button"
                           onClick={handleCancel}
-                          className="inline-flex items-center rounded-full border border-white/20 px-5 py-2 text-xs font-medium text-white/80 transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400"
+                          className="inline-flex items-center rounded-[3.6px] border border-iron-filings px-5 py-2 font-mono text-xs uppercase tracking-[0.16em] text-bone-vellum transition-colors hover:border-lime-surveyor hover:text-lime-surveyor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor"
                         >
                           Cancel
                         </button>
@@ -385,18 +360,18 @@ export function BriefingSection() {
                   {!running && moduleError && (
                     <div
                       role="alert"
-                      className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6"
+                      className="border border-red-500/20 bg-red-500/5 p-6"
                     >
                       <p className="font-mono text-xs uppercase tracking-widest text-red-400">
                         Briefing unavailable
                       </p>
-                      <p className="mt-2 text-sm font-light text-white/70">
+                      <p className="mt-2 text-sm font-light text-drift-ash">
                         {moduleError}
                       </p>
                       <button
                         type="button"
                         onClick={handleRetry}
-                        className="mt-4 inline-flex items-center rounded-full border border-white/20 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400"
+                        className="mt-4 inline-flex items-center rounded-[3.6px] border border-iron-filings px-5 py-2 font-mono text-xs uppercase tracking-[0.16em] text-bone-vellum transition-colors hover:border-lime-surveyor hover:text-lime-surveyor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor"
                       >
                         Try again
                       </button>
@@ -415,8 +390,8 @@ export function BriefingSection() {
                 </div>
 
                 {/* Mandatory Disclaimer */}
-                <div className="mt-8 border-t border-white/10 pt-4">
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">
+                <div className="mt-8 border-t border-iron-filings/70 pt-4">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-drift-ash">
                     AI-generated by a small local model. Verify before acting.
                   </p>
                 </div>

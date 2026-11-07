@@ -9,10 +9,11 @@ import {
 import type { ThreatFilter } from "@/components/workspace/WorkspaceProvider";
 
 /**
- * Segmented filter (DESIGN 8.5, P2 recipe): glass pill group, one row,
+ * Segmented filter (Inversa revamp): a flat hairline-strip control, one row,
  * no wrap, horizontally scrollable on small screens. Display text is short
  * (All / TC / Flood / Wildfire); the full hazard name lives in aria-label.
- * Active state is conveyed with aria-pressed, never color alone.
+ * Active state is conveyed with aria-pressed AND the lime surveyor fill
+ * (DESIGN: 3.6px corners, lime as active state, never color alone).
  */
 const TYPE_OPTIONS: Array<{
   value: Exclude<ThreatFilter, "ALL">;
@@ -50,17 +51,17 @@ export function FilterTrack({
   counts: { ALL: number; TC: number; FL: number; WF: number } | null;
 }) {
   const buttonClass = (active: boolean) =>
-    `flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 lg:px-4 ${
+    `flex shrink-0 items-center gap-2 whitespace-nowrap rounded-[3.6px] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor lg:px-4 ${
       active
-        ? "bg-white text-black shadow-lg shadow-white/5 scale-105"
-        : "text-white/50 hover:text-white hover:bg-white/5"
+        ? "bg-lime-surveyor text-obsidian-loam"
+        : "text-drift-ash hover:text-bone-vellum"
     }`;
 
   return (
     <div
       role="group"
       aria-label="Filter threats by hazard type"
-      className="glass relative flex shrink-0 max-w-full items-center gap-1 self-start overflow-x-auto whitespace-nowrap rounded-full p-1.5 shadow-2xl hide-scrollbar lg:overflow-visible"
+      className="relative flex shrink-0 max-w-full items-center gap-1 self-start overflow-x-auto border border-iron-filings/70 bg-obsidian-loam/40 p-1.5 hide-scrollbar lg:overflow-visible"
     >
       <button
         type="button"
