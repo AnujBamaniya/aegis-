@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { MapFocus } from "./MapCanvas";
+import { CollapseIcon, ExpandIcon } from "@/components/icons";
 import { DataModeBadge } from "@/components/ui/DataModeBadge";
 import type {
   AegisAsset,
@@ -91,8 +92,38 @@ export function ImpactMapPanel({
   // From getPolygon: null = footprint not published yet (404 stays calm).
   const footprintPublished = footprint !== null;
 
+  // Expanded ("fullscreen") mode: the SAME MapCanvas element keeps running —
+  // the container merely becomes a fixed overlay, and MapCanvas's existing
+  // ResizeObserver calls map.resize() for us. Escape closes; body scroll is
+  // locked; focus returns to the toggle on exit.
+  const [expanded, setExpanded] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const toggle = toggleRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+      toggle?.focus();
+    };
+  }, [expanded]);
+
   return (
-    <div className="relative h-[420px] w-full overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40 lg:h-[560px]">
+    <div
+      id="aegis-map-panel"
+      className={
+        expanded
+          ? "aegis-panel-shell fixed inset-0 z-50 overflow-hidden border border-iron-filings/70 bg-obsidian-loam"
+          : "aegis-panel-shell relative h-[420px] w-full overflow-hidden border border-iron-filings/70 bg-obsidian-loam/40 lg:h-[560px]"
+      }
+    >
       <MapCanvas
         event={event}
         footprint={footprint}
@@ -102,11 +133,31 @@ export function ImpactMapPanel({
         lite={lite}
         reducedMotion={reducedMotion}
       />
-      {/* Functional legibility scrim over the base map, not decoration. */}
+      {/* Bottom-only legibility scrim: keeps the data-mode badge readable
+          without muddying the whole basemap (roads/labels stay visible). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-obsidian-loam/70 via-transparent to-obsidian-loam/20"
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-obsidian-loam/55 via-transparent to-transparent"
       />
+
+      {/* Panel toggle: expand to fullscreen overlay / collapse back. */}
+      <div className="absolute right-3 top-3 z-10">
+        <button
+          ref={toggleRef}
+          type="button"
+          onClick={() => setExpanded((open) => !open)}
+          aria-expanded={expanded}
+          aria-controls="aegis-map-panel"
+          className="flex cursor-pointer items-center gap-2 rounded-[3.6px] border border-iron-filings bg-obsidian-loam/85 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-drift-ash hover:text-lime-surveyor focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-lime-surveyor"
+        >
+          {expanded ? (
+            <CollapseIcon className="h-3.5 w-3.5" />
+          ) : (
+            <ExpandIcon className="h-3.5 w-3.5" />
+          )}
+          {expanded ? "Collapse" : "Expand"}
+        </button>
+      </div>
 
       {/* Overlay chips: footprint status (top-left), Demo/Live (bottom-left). */}
       <div className="pointer-events-none absolute left-4 top-4 z-10">

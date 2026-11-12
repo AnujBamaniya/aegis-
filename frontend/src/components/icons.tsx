@@ -258,3 +258,27 @@ export function CloseIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/** Map panel: enter expanded (fullscreen) mode. */
+export function ExpandIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M15 3h6v6" />
+      <path d="M9 21H3v-6" />
+      <path d="m21 3-7 7" />
+      <path d="M3 21l7-7" />
+    </Svg>
+  );
+}
+
+/** Map panel: leave expanded (fullscreen) mode. */
+export function CollapseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M21 9h-6V3" />
+      <path d="M3 15h6v6" />
+      <path d="m15 9 6-6" />
+      <path d="M9 15l-6 6" />
+    </Svg>
+  );
+}

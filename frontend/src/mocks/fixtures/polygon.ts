@@ -1,5 +1,7 @@
 // SYNTHETIC fixture — not real GDACS output. See _meta.ts.
 // Mixed geometry: one Polygon (modeled wind swath) + one LineString (track).
+// Centered on the Alpine event point [124.05, 11.25] so footprint, track,
+// and infrastructure fixtures share one coherent scene.
 
 export const polygonFixture = {
   type: "FeatureCollection",
@@ -10,12 +12,13 @@ export const polygonFixture = {
         type: "Polygon",
         coordinates: [
           [
-            [120.9, 13.9],
-            [122.1, 14.4],
-            [123.2, 13.1],
-            [122.6, 11.9],
-            [121.2, 12.2],
-            [120.9, 13.9],
+            [123.6, 11.05],
+            [124.0, 10.7],
+            [124.6, 11.0],
+            [124.9, 11.4],
+            [124.5, 11.75],
+            [123.9, 11.55],
+            [123.6, 11.05],
           ],
         ],
       },
@@ -26,9 +29,11 @@ export const polygonFixture = {
       geometry: {
         type: "LineString",
         coordinates: [
-          [131.2, 5.9],
-          [131.6, 5.2],
-          [132.3, 4.4],
+          [125.6, 10.2],
+          [124.9, 10.7],
+          [124.35, 11.0],
+          [124.0523, 11.2517],
+          [123.7, 11.6],
         ],
       },
       properties: { name: "Track (best path)", source: "synthetic" },

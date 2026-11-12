@@ -120,6 +120,102 @@ function withAlpha(hex: string, alpha: number): string {
   return `${hex}${value}`;
 }
 
+/**
+ * Cosmetic contrast lift on the CARTO Dark Matter vector style. Roads read
+ * too close to the near-black land, so the fill hue of the known road layer
+ * ids is lifted (cool grey kept, brightness up); label text is brightened
+ * toward bone-vellum with a dark halo. Skipped for the raster fallback.
+ * Any style quirk must never block the map — hence the swallow-all catch.
+ */
+const ROAD_FILL_IDS = [
+  "road_mot_fill_noramp",
+  "road_trunk_fill_noramp",
+  "road_pri_fill_noramp",
+  "road_sec_fill_noramp",
+  "road_mot_fill_ramp",
+  "road_trunk_fill_ramp",
+  "road_pri_fill_ramp",
+  "bridge_mot_fill",
+  "bridge_trunk_fill",
+  "bridge_pri_fill",
+  "bridge_sec_fill",
+  "tunnel_mot_fill",
+  "tunnel_trunk_fill",
+  "tunnel_pri_fill",
+] as const;
+
+function restyleBasemap(instance: MapLibreMap): void {
+  try {
+    if (instance.getLayer("carto-dark-raster-layer")) return;
+    for (const id of ROAD_FILL_IDS) {
+      if (!instance.getLayer(id)) continue;
+      instance.setPaintProperty(
+        id,
+        "line-color",
+        id.includes("sec") ? "#474e5c" : "#5d6575",
+      );
+    }
+    for (const layer of instance.getStyle().layers) {
+      if (layer.type !== "symbol") continue;
+      if (instance.getPaintProperty(layer.id, "text-color") !== undefined) {
+        instance.setPaintProperty(layer.id, "text-color", "#e2e0d3");
+      }
+      if (instance.getPaintProperty(layer.id, "text-halo-width") !== undefined) {
+        instance.setPaintProperty(layer.id, "text-halo-width", 1.2);
+      }
+      if (instance.getPaintProperty(layer.id, "text-halo-color") !== undefined) {
+        instance.setPaintProperty(layer.id, "text-halo-color", "#0b0b0a");
+      }
+    }
+  } catch {
+    // Basemap restyle is cosmetic only.
+  }
+}
+
+/**
+ * Faint 1° reference graticule around the event centre — the coordinate
+ * frame of a tactical chart, kept at whisper opacity so it never competes
+ * with hazard data.
+ */
+function buildGraticule(lng: number, lat: number): GeoJSONInput {
+  const span = 3;
+  const features: {
+    type: "Feature";
+    geometry: { type: "LineString"; coordinates: [number, number][] };
+    properties: Record<string, never>;
+  }[] = [];
+  for (let x = Math.ceil(lng - span); x <= Math.floor(lng + span); x += 1) {
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [x, Math.max(lat - span, -85)],
+          [x, Math.min(lat + span, 85)],
+        ],
+      },
+      properties: {},
+    });
+  }
+  for (let y = Math.ceil(lat - span); y <= Math.floor(lat + span); y += 1) {
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [Math.max(lng - span, -180), y],
+          [Math.min(lng + span, 180), y],
+        ],
+      },
+      properties: {},
+    });
+  }
+  return {
+    type: "FeatureCollection",
+    features,
+  } as unknown as GeoJSONInput;
+}
+
 function collectLngLat(coordinates: unknown, out: [number, number][]): void {
   if (!Array.isArray(coordinates) || coordinates.length === 0) return;
   const first = coordinates[0];
@@ -233,22 +329,70 @@ export default function MapCanvas({
 
     const latest = latestRef.current;
 
+    // Reference graticule (first-added so every impact layer sits above) ----
+    if (!map.getSource("aegis-grid")) {
+      map.addSource("aegis-grid", { type: "geojson", data: EMPTY_INPUT });
+      map.addLayer({
+        id: "grid-lines",
+        type: "line",
+        source: "aegis-grid",
+        paint: {
+          "line-color": "#e6e4d8",
+          "line-width": 1,
+          "line-opacity": 0.07,
+          "line-dasharray": [2, 4],
+        },
+      });
+    }
+    if (latest.event) {
+      (
+        map.getSource("aegis-grid") as MaplibreGeoJSONSource | undefined
+      )?.setData(buildGraticule(latest.event.lng, latest.event.lat));
+    }
+
     // Footprint -----------------------------------------------------
     if (!map.getSource("aegis-footprint")) {
       map.addSource("aegis-footprint", { type: "geojson", data: EMPTY_INPUT });
+      // Wide blurred glow line under the crisp core stroke so the wind swath
+      // reads on the dark basemap (fill alone is far too faint).
+      map.addLayer({
+        id: "footprint-line-glow",
+        type: "line",
+        source: "aegis-footprint",
+        filter: ["==", ["geometry-type"], "Polygon"],
+        paint: {
+          "line-color": latest.alertHex,
+          "line-width": 9,
+          "line-opacity": 0.16,
+          "line-blur": 3,
+        },
+      });
       map.addLayer({
         id: "footprint-fill",
         type: "fill",
         source: "aegis-footprint",
         filter: ["==", ["geometry-type"], "Polygon"],
-        paint: { "fill-color": latest.alertHex, "fill-opacity": 0.15 },
+        paint: { "fill-color": latest.alertHex, "fill-opacity": 0.2 },
       });
       map.addLayer({
         id: "footprint-line",
         type: "line",
         source: "aegis-footprint",
-        filter: ["in", ["geometry-type"], ["literal", ["Polygon", "LineString"]]],
-        paint: { "line-color": latest.alertHex, "line-width": 1.5, "line-opacity": 0.6 },
+        filter: ["==", ["geometry-type"], "Polygon"],
+        paint: { "line-color": latest.alertHex, "line-width": 2, "line-opacity": 0.9 },
+      });
+      // Modeled best-path track: dashed so "modeled" is legible on the map.
+      map.addLayer({
+        id: "footprint-track",
+        type: "line",
+        source: "aegis-footprint",
+        filter: ["==", ["geometry-type"], "LineString"],
+        paint: {
+          "line-color": latest.alertHex,
+          "line-width": 2,
+          "line-opacity": 0.85,
+          "line-dasharray": [2, 2],
+        },
       });
       map.addLayer({
         id: "footprint-point",
@@ -281,8 +425,10 @@ export default function MapCanvas({
     } as unknown as GeoJSONInput);
 
     for (const [layerId, property, color] of [
+      ["footprint-line-glow", "line-color", latest.alertHex],
       ["footprint-fill", "fill-color", latest.alertHex],
       ["footprint-line", "line-color", latest.alertHex],
+      ["footprint-track", "line-color", latest.alertHex],
       ["footprint-point", "circle-color", latest.alertHex],
       ["footprint-point", "circle-stroke-color", latest.alertHex],
     ] as const) {
@@ -348,7 +494,13 @@ export default function MapCanvas({
         filter: ["==", ["get", "synthetic"], false],
         paint: {
           "circle-color": tierColorExpression() as never,
-          "circle-radius": 6,
+          "circle-radius": [
+            "match",
+            ["get", "tier"],
+            "CRITICAL_IMPACT",
+            10,
+            8,
+          ] as never,
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
         },
@@ -361,9 +513,32 @@ export default function MapCanvas({
         filter: ["==", ["get", "synthetic"], true],
         paint: {
           "circle-color": "transparent",
-          "circle-radius": 7,
+          "circle-radius": 9,
           "circle-stroke-color": tierColorExpression() as never,
           "circle-stroke-width": 2,
+        },
+      });
+      // Asset name labels appear close-in, where the basemap city labels
+      // already resolve; collision rules keep overlapping names readable.
+      map.addLayer({
+        id: "assets-label",
+        type: "symbol",
+        source: "aegis-assets",
+        minzoom: 12,
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 10,
+          "text-transform": "uppercase",
+          "text-letter-spacing": 0.05,
+          "text-offset": [0, 1.35],
+          "text-anchor": "top",
+          "text-allow-overlap": false,
+        },
+        paint: {
+          "text-color": "#c9c7ba",
+          "text-halo-color": "#0b0b0a",
+          "text-halo-width": 1,
         },
       });
     }
@@ -412,9 +587,9 @@ export default function MapCanvas({
           wrap.append(ring);
         }
         const dot = document.createElement("span");
-        dot.className =
-          "absolute inset-0 z-10 rounded-full border-2 border-lime-surveyor";
+        dot.className = "absolute inset-0 z-10 rounded-full";
         dot.style.backgroundColor = TIER_META[asset.riskTier]?.hex ?? "#ef4444";
+        dot.style.border = "2px solid rgba(11, 11, 10, 0.65)";
         wrap.append(dot);
         const marker = new Marker({ element: wrap })
           .setLngLat([asset.lng, asset.lat])
@@ -433,8 +608,10 @@ export default function MapCanvas({
       const bounds = new LngLatBounds();
       for (const point of points) bounds.extend(point);
       map.fitBounds(bounds, {
-        padding: 64,
-        maxZoom: 12,
+        // Asymmetric: leave breathing room for the status chips (top-left)
+        // and the data-mode badge (bottom-left) over the map surface.
+        padding: { top: 72, right: 72, bottom: 96, left: 72 },
+        maxZoom: 11.5,
         animate: !latest.lite && !latest.reducedMotion,
       });
     } else if (latest.event) {
@@ -516,6 +693,7 @@ export default function MapCanvas({
       instance.on("style.load", () => {
         settled = true;
         if (timer) clearTimeout(timer);
+        restyleBasemap(instance);
       });
 
       instance.on("load", () => {
@@ -526,6 +704,7 @@ export default function MapCanvas({
 
         // Tooltip on hover over real or modeled pins
         instance.on("mousemove", ["assets-solid", "assets-hollow"], (e: MapLayerMouseEvent) => {
+          instance.getCanvas().style.cursor = "pointer";
           const feature = e.features?.[0];
           if (!feature) return;
           const props = feature.properties as Partial<AssetTooltipProps>;
@@ -545,6 +724,7 @@ export default function MapCanvas({
         });
 
         instance.on("mouseleave", ["assets-solid", "assets-hollow"], () => {
+          instance.getCanvas().style.cursor = "";
           ensurePopup().remove();
         });
       });
@@ -673,7 +853,7 @@ export default function MapCanvas({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 h-full w-full"
+      className="aegis-map-surface absolute inset-0 h-full w-full"
       role="application"
       aria-label="Impact footprint and asset map"
     />

@@ -315,6 +315,24 @@ body {
 .maplibregl-ctrl-attrib-button {
   color: #84837b;
 }
+/* The compact (i) button renders its own white pill by default. */
+.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button {
+  background-color: rgba(19, 20, 14, 0.85);
+  border: 1px solid #404040;
+  border-radius: 3.6px;
+}
+
+/* Basemap contrast lift: raises roads/water/labels read-through behind the
+   impact overlay without restyling the vector source (P3 craft pass). */
+.aegis-map-surface canvas {
+  filter: brightness(1.12) contrast(1.06) saturate(0.88);
+}
+
+/* Panel-shell: MapLibre nav control sits below the expand/collapse toggle
+   in the top-right corner of the map panel. */
+.aegis-panel-shell .maplibregl-ctrl-top-right {
+  top: 48px;
+}
 
 /* Asset tooltip (P3, hotspot style DESIGN 8.7): built in MapCanvas with
    createElement/textContent (no innerHTML) and shown as a MapLibre popup
